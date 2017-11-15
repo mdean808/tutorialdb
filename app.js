@@ -101,8 +101,6 @@ function handleDisconnect() {
 
 handleDisconnect();
 
-app.use(express.static(__dirname + '/public_html'));
-app.listen(process.env.PORT || 8080);
 //console.log('Server running on http://localhost:8080');
 //url.open('http://localhost:8080');
 app.use(bodyParser.urlencoded({extended: false}));
