@@ -23,6 +23,16 @@
 </head>
 
 <body>
+<ul id="slide-out" class="side-nav">
+    <li><a class="waves-effect" href="index"><i class="material-icons">home</i>Home</a></li>
+    <li><div class="divider"></div></li>
+    <li><a class="waves-effect" href="about">About</a></li>
+    <li><a class="waves-effect" href="tutorials">Tutorials</a></li>
+    <li><div class="divider"></div></li>
+    <li><input id="search" class="search-nav" title="Search" type="text" placeholder="Search Tutorials" onkeyup="if(event.keyCode === 13) { document.location.href = '/search?q=' + (document.getElementById('search').value).replace(/ /g, '+'); }"></li>
+    <li><a class="waves-effect" onclick="logIn()">Login</a></li>
+</ul>
+
 <ul id='logged-in' class='dropdown-content' style="color: #5bc0de">
     <li class="gray lighten-3"><a href="#" style="color: #5bc0de;">Your Tutorials</a></li>
     <li class="divider"></li>
@@ -31,6 +41,17 @@
 <div class="navbar-fixed">
     <nav>
         <div class="nav-wrapper" style="background-color: #292b2c;">
+            <ul class="right">
+                <li>
+                    <a href="#" data-activates="slide-out" class="button-collapse show-on-medium-and-down theme-text"><i class="material-icons">menu</i></a>
+                </li>
+            </ul>
+            <ul class="show-on-medium-and-down">
+                <li>
+                    <img style="margin-top: 11px; margin-left: 5px;" src="icons/favicon.ico">
+                </li>
+                <li><a href="index" class="nav-logo">TutorialDB</a></li>
+            </ul>
             <ul class="left hide-on-med-and-down">
                 <li><img style="margin-top: 15px; margin-left: 5px;" src="icons/favicon.ico"></li>
                 <li><a href="index" class="nav-logo">TutorialDB</a></li>
@@ -43,7 +64,7 @@
                         class="material-icons left">search</i></a>
                 </li>
             </ul>
-            <ul class="right">
+            <ul class="right hide-on-med-and-down">
                 <li>
                     <a id="new-tutorial" style="display: none;" class="tutorial-link new-tutorial" href="tutorial-submit">New<i
                             class="material-icons left">edit</i></a>
@@ -67,6 +88,11 @@
 <script type="text/javascript" src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js"></script>
 <script type="text/javascript" src="/javascript/index.js"></script>
+<script>
+    $(".button-collapse").sideNav({
+        menuWidth: 250
+    });
+</script>
 </body>
 
 </html>

@@ -111,7 +111,7 @@ app.post('/api/create-db', function (req, res) {
 		if (err) {
 			console.log(err);
 		} else {
-			console.log("Database created");
+			console.log("Database created!");
 			console.log(result);
 		}
 	});
