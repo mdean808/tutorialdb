@@ -35,9 +35,9 @@ body {
   color: #5bc0de;
 }
 
-
-
-
+.inline {
+  display: inline-block;
+}
 
 
 

@@ -4,12 +4,14 @@
 <head>
     <title>TutorialDB - {{{title}}}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta charset="utf-8" />
+    <meta charset="utf-8"/>
     <meta content="A volunteer run list of most tutorials on the internet!" name="description">
     <meta name=viewport content='width=320'>
-    <meta name="google-signin-client_id" content="513403102947-k7qrh4q7s7p5ar7b1dpo27o768e6iq8i.apps.googleusercontent.com">
+    <meta name="google-signin-client_id"
+          content="513403102947-k7qrh4q7s7p5ar7b1dpo27o768e6iq8i.apps.googleusercontent.com">
 
-    <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"
+            integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/showdown/1.6.4/showdown.min.js" async defer></script>
     <script src="https://apis.google.com/js/platform.js" async defer></script>
     <script src='https://www.google.com/recaptcha/api.js'></script>
@@ -17,20 +19,42 @@
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.1.3/toastr.min.css">
 
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/css/materialize.min.css">
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-alpha.2/css/materialize.min.css">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link rel="stylesheet" href="styles/style.css">
 </head>
 
 <body>
-<ul id="slide-out" class="side-nav">
+<ul id="slide-out" class="sidenav">
     <li><a class="waves-effect" href="index"><i class="material-icons">home</i>Home</a></li>
-    <li><div class="divider"></div></li>
+    <li>
+        <div class="divider"></div>
+    </li>
     <li><a class="waves-effect" href="about">About</a></li>
     <li><a class="waves-effect" href="tutorials">Tutorials</a></li>
-    <li><div class="divider"></div></li>
-    <li><input id="search" class="search-nav" title="Search" type="text" placeholder="Search Tutorials" onkeyup="if(event.keyCode === 13) { document.location.href = '/search?q=' + (document.getElementById('search').value).replace(/ /g, '+'); }"></li>
-    <li><a class="waves-effect" onclick="logIn()">Login</a></li>
+    <li>
+        <div class="divider"></div>
+    </li>
+    <li style="margin: 0 10px 0 10px">
+        <input id="search" class="inline search-nav" title="Search" type="text" placeholder="Search Tutorials"
+               onkeyup="if(event.keyCode === 13) { document.location.href = '/search?q=' + (document.getElementById('search').value).replace(/ /g, '+'); }">
+        <div class="center">
+            <button onclick="document.location.href = '/search?q=' + (document.getElementById('search').value).replace(/ /g, '+');"
+                    class="inline waves-effect waves-light btn"><i class="material-icons">search</i></button>
+        </div>
+    </li>
+    <li>
+        <div class="divider"></div>
+    </li>
+    <li><a class="waves-effect" id="g-signIn1"
+           data-onsuccess="onSignIn" >Login</a>
+    <a id="nav-welcome" style="display: none;">Welcome, !</a>
+    </li>
+
+    <li id="nav-logged-in" style="margin-left: 10px; display: none;">
+        <a href="#" >Your Tutorials</a>
+    <a href="signedout" onclick="signOut();">Sign out</a></li>
 </ul>
 
 <ul id='logged-in' class='dropdown-content' style="color: #5bc0de">
@@ -43,10 +67,11 @@
         <div class="nav-wrapper" style="background-color: #292b2c;">
             <ul class="right">
                 <li>
-                    <a href="#" data-activates="slide-out" class="button-collapse show-on-medium-and-down theme-text"><i class="material-icons">menu</i></a>
+                    <a href="#slide-out" data-activates="slide-out"
+                       class="sidenav-trigger show-on-medium-and-down theme-text"><i class="material-icons">menu</i></a>
                 </li>
             </ul>
-            <ul class="show-on-medium-and-down">
+            <ul class="show-on-medium-and-down hide-on-med-and-up">
                 <li>
                     <img style="margin-top: 11px; margin-left: 5px;" src="icons/favicon.ico">
                 </li>
@@ -58,23 +83,29 @@
                 <li><a href="tutorials" class="nav-item">Tutorials</a></li>
                 <li><a href="about" style="margin-right: 25px;" class="nav-item">About</a></li>
                 <li>
-                    <input id="search" class="search-nav" title="Search" type="text" placeholder="Search Tutorials" onkeyup="if(event.keyCode === 13) { document.location.href = '/search?q=' + (document.getElementById('search').value).replace(/ /g, '+'); }">
+                    <input id="search" class="search-nav white-text" title="Search" type="text" placeholder="Search Tutorials"
+                           onkeyup="if(event.keyCode === 13) { document.location.href = '/search?q=' + (document.getElementById('search').value).replace(/ /g, '+'); }">
                 </li>
-                <li><a href="search?q=" onclick="document.location.href = '/search?q=' + (document.getElementById('search').value).replace(/ /g, '+');" class="nav-item nav-search-btn">Search<i
+                <li><a href="search?q="
+                       onclick="document.location.href = '/search?q=' + (document.getElementById('search').value).replace(/ /g, '+');"
+                       class="nav-item nav-search-btn">Search<i
                         class="material-icons left">search</i></a>
                 </li>
             </ul>
             <ul class="right hide-on-med-and-down">
                 <li>
-                    <a id="new-tutorial" style="display: none;" class="tutorial-link new-tutorial" href="tutorial-submit">New<i
+                    <a id="new-tutorial" style="display: none;" class="tutorial-link new-tutorial"
+                       href="tutorial-submit">New<i
                             class="material-icons left">edit</i></a>
                 </li>
-                <li><a id="login-dropdown" class="dropdown-button" data-activates="logged-in" style="color: #5bc0de; display: none;">Welcome, Joe!<i class="material-icons right">arrow_drop_down</i></a></li>
+                <li><a id="login-dropdown" class="dropdown-trigger" data-target="logged-in"
+                       style="color: #5bc0de; display: none;">Welcome, Joe!<i class="material-icons right">arrow_drop_down</i></a>
+                </li>
 
             </ul>
         </div>
     </nav>
-    <div id="g-signIn" class="g-signin2 right" style="margin-top: 13px; margin-right: 5px;"
+    <div id="g-signIn" class="g-signin2 right hide-on-med-and-down" style="margin-top: 13px; margin-right: 5px;"
          data-theme="dark"
          data-onsuccess="onSignIn"></div>
 </div>
@@ -82,16 +113,17 @@
 {{{body}}}
 
 <footer class="center">
-    <a href="https://www.facebook.com/Tutorialdb-135872970339716/">Facebook</a> <a href="https://twitter.com/TutorialDataB">Twitter</a>
+    <a href="https://www.facebook.com/Tutorialdb-135872970339716/">Facebook</a> <a
+        href="https://twitter.com/TutorialDataB">Twitter</a>
 </footer>
 
 <script type="text/javascript" src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-alpha.2/js/materialize.min.js"></script>
 <script type="text/javascript" src="/javascript/index.js"></script>
 <script>
-    $(".button-collapse").sideNav({
-        menuWidth: 250
-    });
+    let element = document.querySelector('.sidenav');
+    let sidenav = new M.Sidenav(element);
+    $('.dropdown-trigger').dropdown();
 </script>
 </body>
 
