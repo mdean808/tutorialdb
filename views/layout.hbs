@@ -16,9 +16,9 @@
     <script src="https://apis.google.com/js/platform.js" async defer></script>
     <script src='https://www.google.com/recaptcha/api.js'></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.1.3/toastr.min.js"></script>
-
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.1.3/toastr.min.css">
-
+    <link rel="stylesheet"
+          href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css">
     <link rel="stylesheet"
           href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-alpha.2/css/materialize.min.css">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
@@ -48,13 +48,13 @@
         <div class="divider"></div>
     </li>
     <li><a class="waves-effect" id="g-signIn1"
-           data-onsuccess="onSignIn" >Login</a>
-    <a id="nav-welcome" style="display: none;">Welcome, !</a>
+           data-onsuccess="onSignIn">Login</a>
+        <a id="nav-welcome" style="display: none;">Welcome, !</a>
     </li>
 
     <li id="nav-logged-in" style="margin-left: 10px; display: none;">
-        <a href="#" >Your Tutorials</a>
-    <a href="signedout" onclick="signOut();">Sign out</a></li>
+        <a href="#">Your Tutorials</a>
+        <a href="signedout" onclick="signOut();">Sign out</a></li>
 </ul>
 
 <ul id='logged-in' class='dropdown-content' style="color: #5bc0de">
@@ -83,7 +83,8 @@
                 <li><a href="tutorials" class="nav-item">Tutorials</a></li>
                 <li><a href="about" style="margin-right: 25px;" class="nav-item">About</a></li>
                 <li>
-                    <input id="search" class="search-nav white-text" title="Search" type="text" placeholder="Search Tutorials"
+                    <input id="search" class="search-nav white-text" title="Search" type="text"
+                           placeholder="Search Tutorials"
                            onkeyup="if(event.keyCode === 13) { document.location.href = '/search?q=' + $('#search').val().replace(/ /g, '+'); }">
                 </li>
                 <li><a href="search?q="
@@ -104,9 +105,10 @@
 
             </ul>
         </div>
-        
+
     </nav>
-    <div id="g-signIn" class="g-signin2 right hide-on-med-and-down" style="position: fixed; right: 0; margin-top: 13px; margin-right: 5px;"
+    <div id="g-signIn" class="g-signin2 right hide-on-med-and-down"
+         style="position: fixed; right: 0; margin-top: 13px; margin-right: 5px;"
          data-theme="dark"
          data-onsuccess="onSignIn"></div>
 </div>
@@ -121,6 +123,7 @@
 <script type="text/javascript" src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-alpha.2/js/materialize.min.js"></script>
 <script type="text/javascript" src="/javascript/index.js"></script>
+<script type="text/javascript" src="/javascript/showdown-prettify.min.js"></script>
 <script>
     let element = document.querySelector('.sidenav');
     let sidenav = new M.Sidenav(element);

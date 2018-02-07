@@ -13,13 +13,13 @@
 </div>
 <div class="container">
         <div class="row center">
-            <a data-target="edit-modal" class="btn waves-effect waves-light waves-block modal-trigger">Edit</a>
+            <a data-target="edit-modal" id="edit" class="btn waves-effect waves-light waves-block modal-trigger">Edit</a>
         </div>
 </div>
 <div id="edit-modal" class="modal">
     <div class="modal-content">
         <h4>Edit Tutorial</h4>
-
+    <form action="/api/edit-tutorial" method="post">
         <div class="form-group">
             <label for="form-title">Title</label>
             <input type="text" class="form-control browser-default" name="title" id="form-title" required>
@@ -33,7 +33,7 @@
         <div class="form-group">
             <label for="tutorial-details">Tutorial information</label>
             <textarea class="form-control" id="tutorial-details" name="details" rows="3"
-                      oninput="document.getElementById('tutorial-details-preview').innerHTML = new showdown.Converter().makeHtml(document.getElementById('tutorial-details').value);"
+                      oninput="document.getElementById('tutorial-details-preview').innerHTML = new showdown.Converter({extensions: ['prettify']}).makeHtml(document.getElementById('tutorial-details').value);"
                       required></textarea>
             <small id="detailsHelp" class="form-text text-muted">Describe your tutorial here. You can use <a
                     href="http://commonmark.org/help/" target="_blank">Markdown </a>here.
@@ -50,24 +50,23 @@
             <small id="fileHelp" class="form-text text-muted">Make a quick summary of your tutorial for searches here.
             </small>
             <input type="hidden" id="google-token" name="g-id" value="" required/>
-        </div>
-        <div>
-            <label for="captcha">Captcha</label>
-            <div class="g-recaptcha" id="captcha" data-callback="recaptchaCallback" data-size="compact"
-                 data-sitekey="6Lf1RzQUAAAAAJOzGU6EdCVzYczl0QQfSMAS7nT6"></div>
+            <input type="hidden" id="tutorial-id" name="tutorialID" value="" required/>
         </div>
         <br/>
-        <small id="catpchaHelp" class="form-text text-muted">If you can't click the button make sure you did the
-            captcha.
-        </small>
+        <button id="submitBtn" type="submit" class="btn waves-effect waves-light waves-block">Submit</button>
+    </form>
     </div>
-    <div class="modal-footer">
-        <a id="submitBtn" class="btn waves-effect waves-light waves-block disabled" disabled>Submit</a>
-    </div>
+
 </div>
 <script type="text/javascript" src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.1.3/toastr.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
 <script src="/javascript/index.js"></script>
 <script>
+    $('pre code').each(function(i, block) {
+        hljs.highlightBlock(block);
+    });
     loadTutorial();
+    $('#edit').hide();
+    $('#tutorial-id').val(getQueryString('id'));
 </script>

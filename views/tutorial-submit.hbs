@@ -20,7 +20,7 @@
                 </div>
                 <div class="form-group">
                     <label for="tutorial-details">Tutorial information</label>
-                    <textarea class="form-control" id="tutorial-details" name="details" rows="3" oninput="document.getElementById('tutorial-details-preview').innerHTML = new showdown.Converter().makeHtml(document.getElementById('tutorial-details').value);" required></textarea>
+                    <textarea class="form-control" id="tutorial-details" name="details" rows="3" oninput="document.getElementById('tutorial-details-preview').innerHTML = new showdown.Converter({extensions: ['prettify']}).makeHtml(document.getElementById('tutorial-details').value);" required></textarea>
                     <small id="detailsHelp" class="form-text text-muted">Describe your tutorial here. You can use <a href="http://commonmark.org/help/" target="_blank">Markdown </a>here.</small>
                 </div>
 

@@ -243,10 +243,10 @@ app.post('/api/auth-user', function (req, res) {
 					res.json({signIn: 'succesful', admin: false, editable: true})
 				} else {
 					if (req.query.id) {
-						const tutorialInfo = {
+						const tutorial = {
 							tutorialID: tutId
 						};
-						validateUser(userid, tutorialInfo, function (err, validated) {
+						validateUser(userid, tutorial, function (err, validated) {
 							if (validated) {
 								res.json({signIn: 'succesful', admin: false, tutorial: true, editable: true})
 							} else {
@@ -260,18 +260,16 @@ app.post('/api/auth-user', function (req, res) {
 			}
 		});
 });
-
+let tutorialInfo;
 app.post('/api/edit-tutorial', function (req, res) {
-	const token = req.body.tokenId;
-	const tutorialInfo = {
-			tutorialID: req.body.tutorialID,
-			author: req.body.author,
-			title: req.body.title,
-			link: req.body.link,
-			desc: req.body.desc,
-			summary: req.body.summary
-		}
-	;
+	const token = req.body['g-id'];
+	tutorialInfo = {
+		tutorialID: req.body.tutorialID,
+		title: req.body.title,
+		link: req.body.link,
+		desc: req.body.details,
+		summary: req.body.summary
+	};
 	let userid = '';
 	client.verifyIdToken(
 		token,
@@ -283,15 +281,33 @@ app.post('/api/edit-tutorial', function (req, res) {
 				const payload = login.getPayload();
 				userid = payload['sub'];
 				if (userid === morgan) {
-					res.end(JSON.stringify({
-						signIn: 'succesful',
-						admin: true
-					}));
+					const sql = 'UPDATE tutorials SET title = ' + SqlString.escape(tutorialInfo.title) + ', link = ' + SqlString.escape(tutorialInfo.link) +  ', description = ' + SqlString.escape(tutorialInfo.desc) + ', summary = ' + SqlString.escape(tutorialInfo.summary) + ' WHERE id = ' + SqlString.escape(tutorialInfo.tutorialID);
+					con.query(sql, function (err, result) {
+						if (err) {
+							console.log(err);
+							res.redirect('/tutorial?id=' + tutorialInfo.tutorialID + '&error=There was an error');
+						} else {
+							console.log(result);
+							res.redirect('/tutorial?id=' + tutorialInfo.tutorialID + '&error=Successfully edited tutorial');
+						}
+					});
 				} else {
-					validateUser(userid, tutorialInfo, function (err, validated, tutorialInfo) {
-						if (err) return console.log(err);
+					validateUser(userid, tutorialInfo, function (err, validated, tutorial) {
+						if (err) return function () {
+							console.log(err);
+							res.redirect('back?error=There was an error');
+						};
 						if (validated) {
-							const sql = 'UPDATE tutorials SET title = ' + SqlString.escape(tutorialInfo.title) + 'link = ' + SqlString.escape(tutorialInfo.link) + 'description = ' + SqlString.escape(tutorialInfo.desc) + 'summary = ' + SqlString.escape(tutorialInfo.summary) + 'author = ' + SqlString.escape(tutorialInfo.author) + ' WHERE id = ' + SqlString.escape(tutorialInfo.tutorialID)
+							const sql = 'UPDATE tutorials SET title = ' + SqlString.escape(tutorial.title) + ', link = ' + SqlString.escape(tutorial.link) + ', description = ' + SqlString.escape(tutorial.desc) + ', summary = ' + SqlString.escape(tutorial.summary) + ' WHERE id = ' + SqlString.escape(tutorial.tutorialID);
+							con.query(sql, function (err, result) {
+								if (err) {
+									console.log(err);
+									res.redirect('/tutorial?id=' + tutorialInfo.tutorialID + '&error=There was an error');
+								} else {
+									console.log(result);
+									res.redirect('/tutorial?id=' + tutorialInfo.tutorialID + '&error=Successfully edited tutorial');
+								}
+							});
 						}
 					});
 				}
@@ -300,16 +316,16 @@ app.post('/api/edit-tutorial', function (req, res) {
 
 });
 
-function validateUser(userid, tutorialInfo, cb) {
-	console.log(tutorialInfo);
-	con.query("SELECT * FROM tutorials WHERE id = " + SqlString.escape(tutorialInfo.tutorialID), function (err, result) {
+function validateUser(userid, tutorial, cb) {
+	console.log(tutorial);
+	con.query("SELECT * FROM tutorials WHERE id = " + SqlString.escape(tutorial.tutorialID), function (err, result) {
 		if (err) {
 			console.log(err);
 			cb(err, null, null)
 		} else {
 			console.log(result);
 			if (userid === result[0].authToken) {
-				cb(null, true, tutorialInfo)
+				cb(null, true, tutorial)
 			} else {
 				cb(null, false, null)
 			}
@@ -369,6 +385,7 @@ app.get('/api/set-text', function (req, res) {
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
+	console.log(req);
 	const err = new Error('Not Found');
 	err.status = 404;
 	next(err);

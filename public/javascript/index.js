@@ -21,6 +21,7 @@ function onSignIn(googleUser) {
         },
         success: function (result) {
             console.log(result);
+			$('#edit').show();
             document.getElementById('g-signIn').style.display = 'none';
 			document.getElementById('g-signIn1').style.display = 'none';
             document.getElementById('logged-in').style.display = 'block';
