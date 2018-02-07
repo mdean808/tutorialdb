@@ -1,14 +1,69 @@
 <div class="container">
     <div class="row">
         <h4 style="color: #000; margin-top: 25px; margin-bottom: 5px;" id="tutorial-title">How to Fly</h4>
-        <small style="margin-left: 1px;">By</small> <small id="creator-name">Unicorn</small>
+        <small style="margin-left: 1px;">By</small>
+        <small id="creator-name">Unicorn</small>
         <div style="border: 2px solid #5bc0de; padding: 24px 24px 20px 24px; border-radius: 6px; margin-top: 15px; margin-bottom: 15px;">
             <p id="tutorial-desc" style="margin-top: 1px;">Sik description on how to fly</p>
-            <hr />
-            <a id="tutorial-link" href="https://www.youtube.com/watch?v=gc1_bi6L2sE" target="_blank">Youtube - How to Fly</a>
+            <hr/>
+            <a id="tutorial-link" href="https://www.youtube.com/watch?v=gc1_bi6L2sE" target="_blank">Youtube - How to
+                Fly</a>
         </div>
     </div>
+</div>
+<div class="container">
+        <div class="row center">
+            <a data-target="edit-modal" class="btn waves-effect waves-light waves-block modal-trigger">Edit</a>
+        </div>
+</div>
+<div id="edit-modal" class="modal">
+    <div class="modal-content">
+        <h4>Edit Tutorial</h4>
 
+        <div class="form-group">
+            <label for="form-title">Title</label>
+            <input type="text" class="form-control browser-default" name="title" id="form-title" required>
+            <small id="titleHelp" class="form-text text-muted">This is the title of the tutorial.</small>
+        </div>
+        <div class="form-group">
+            <label for="form-link">Link</label>
+            <input type="url" class="form-control browser-default" name="link" id="form-link" required>
+            <small id="linkHelp" class="form-text text-muted">This is the direct url to the tutorial.</small>
+        </div>
+        <div class="form-group">
+            <label for="tutorial-details">Tutorial information</label>
+            <textarea class="form-control" id="tutorial-details" name="details" rows="3"
+                      oninput="document.getElementById('tutorial-details-preview').innerHTML = new showdown.Converter().makeHtml(document.getElementById('tutorial-details').value);"
+                      required></textarea>
+            <small id="detailsHelp" class="form-text text-muted">Describe your tutorial here. You can use <a
+                    href="http://commonmark.org/help/" target="_blank">Markdown </a>here.
+            </small>
+        </div>
+
+        <div style="border: 2px solid #5bc0de;padding: 24px 24px 20px 24px; border-radius: 6px; margin-top: 15px; margin-bottom: 15px;">
+            <label for="tutorial-details-preview">Preview</label>
+            <p id="tutorial-details-preview"></p>
+        </div>
+        <div class="form-group">
+            <label for="tutorial-summary">Summary</label>
+            <textarea class="form-control" id="tutorial-summary" name="summary" rows="2" required></textarea>
+            <small id="fileHelp" class="form-text text-muted">Make a quick summary of your tutorial for searches here.
+            </small>
+            <input type="hidden" id="google-token" name="g-id" value="" required/>
+        </div>
+        <div>
+            <label for="captcha">Captcha</label>
+            <div class="g-recaptcha" id="captcha" data-callback="recaptchaCallback" data-size="compact"
+                 data-sitekey="6Lf1RzQUAAAAAJOzGU6EdCVzYczl0QQfSMAS7nT6"></div>
+        </div>
+        <br/>
+        <small id="catpchaHelp" class="form-text text-muted">If you can't click the button make sure you did the
+            captcha.
+        </small>
+    </div>
+    <div class="modal-footer">
+        <a id="submitBtn" class="btn waves-effect waves-light waves-block disabled" disabled>Submit</a>
+    </div>
 </div>
 <script type="text/javascript" src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.1.3/toastr.min.js"></script>

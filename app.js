@@ -7,6 +7,7 @@ const Recaptcha = require('recaptcha-verify');
 const swearjar = require('swearjar');
 const mysql = require('mysql');
 const GoogleAuth = require('google-auth-library');
+const SqlString = require('sqlstring');
 
 const index = require('./routes/index');
 const users = require('./routes/users');
@@ -52,17 +53,30 @@ app.get('/submit-captcha', function (req, res) {
 			if (swearjar.profane(allWords)) {
 				res.status(200).redirect('/tutorial-submit?error=profanity');
 			} else {
-				res.status(200).redirect('/submitted');
-				const sql = "INSERT INTO tutorials (title, link, description, summary, author) VALUES ('" + title + "', '" + link + "', '" + desc + "', '" + summary + "', '" + username + "')";
-				con.query(sql, function (err, result) {
-					if (err) {
-						console.log(err);
-					} else {
-						JSON.stringify({
-							addedTutorial: result
-						})
-					}
-				});
+				const token = req.query['g-id'];
+				let authToken = '';
+				client.verifyIdToken(
+					token,
+					'513403102947-k7qrh4q7s7p5ar7b1dpo27o768e6iq8i.apps.googleusercontent.com',
+					function (e, login) {
+						if (e) {
+							console.log(e);
+						} else {
+							const payload = login.getPayload();
+							authToken = payload['sub'];
+							console.log(authToken, title);
+							const sql = "INSERT INTO tutorials (title, link, description, summary, author, authToken) VALUES (" + SqlString.escape(title) + ", " + SqlString.escape(link) + ", " + SqlString.escape(desc) + ", " + SqlString.escape(summary) + ", " + SqlString.escape(username) + ", " + SqlString.escape(authToken) + ")";
+							con.query(sql, function (err, result) {
+								if (err) {
+									console.log(err);
+								} else {
+									console.log("Added Tutorial:", result);
+									res.status(200).redirect('/submitted');
+
+								}
+							});
+						}
+					});
 				// save session.. create user.. save form data.. render page, return json.. etc.
 			}
 		} else {
@@ -71,6 +85,7 @@ app.get('/submit-captcha', function (req, res) {
 		}
 	});
 });
+
 
 function handleDisconnect() {
 	con = mysql.createConnection({
@@ -128,29 +143,11 @@ app.get('/api/create-table', function (req, res) {
 	});
 });
 <*/
-app.post('/api/add-tutorial', function (req, res) {
-	/** @namespace req.query.author */
-	const sql = "INSERT INTO tutorials (title, link, description, summary, author) VALUES ('" + req.query.title + "', '" + req.query.link + "', '" + req.query.desc + "', '" + req.query.summary + "', '" + req.query.author + "')";
-	if (con.state !== 'disconnected')
-		con.query(sql, function (err, result) {
-			if (err) {
-				console.log(err);
-			} else {
-				console.log("Added Tutorial:", result);
-				res.writeHead(200, {'Content-Type': 'application/json'});
-				res.end(JSON.stringify({
-					addedTutorial: result
-				}));
-			}
-		});
-});
-
 app.post('/api/get-all-tutorials', function (req, res) {
 	con.query("SELECT * FROM tutorials", function (err, result) {
 		if (err) {
 			console.log(err);
 		} else {
-			console.log(result.length);
 			res.writeHead(200, {'Content-Type': 'application/json'});
 			res.end(JSON.stringify({
 				allTutorials: result.length
@@ -161,10 +158,13 @@ app.post('/api/get-all-tutorials', function (req, res) {
 
 app.post('/api/search-tutorials', function (req, res) {
 	if (con.state !== 'disconnected') {
-		con.query("SELECT * FROM tutorials WHERE title LIKE '%" + req.query.q + "%'", function (err, result) {
+		con.query("SELECT * FROM tutorials WHERE title LIKE " + SqlString.escape("%" + req.query.q + "%"), function (err, result) {
 			if (err) {
 				console.log(err)
 			} else {
+				for (let i = 0; i < result.length; i++) {
+					delete result[i].authToken;
+				}
 				console.log(result);
 				res.writeHead(200, {'Content-Type': 'application/json'});
 				res.end(JSON.stringify({
@@ -181,9 +181,12 @@ app.post('/api/get-tutorial', function (req, res) {
 		if (err) {
 			console.log(err);
 		} else {
+			for (let i = 0; i < result.length; i++) {
+				delete result[i].authToken;
+			}
 			res.writeHead(200, {'Content-Type': 'application/json'});
 			res.end(JSON.stringify({
-				searchResults: result
+				tutorialResults: result
 			}));
 		}
 	});
@@ -203,7 +206,7 @@ app.post('/api/delete-tutorial', function (req, res) {
 			//var domain = payload['hd'];
 		});
 	if (userid === morgan) {
-		const sql = "DELETE FROM tutorials WHERE id = '" + tutorialID + "'";
+		const sql = "DELETE FROM tutorials WHERE id = " + SqlString.escape(tutorialID);
 		con.query(sql, function (err, result) {
 			if (err) {
 				console.log(err);
@@ -222,9 +225,53 @@ app.post('/api/delete-tutorial', function (req, res) {
 		}));
 	}
 });
-
+let tutId;
 app.post('/api/auth-user', function (req, res) {
 	const token = req.body.tokenId;
+	tutId = req.body.id;
+	let userid = '';
+	client.verifyIdToken(
+		token,
+		'513403102947-k7qrh4q7s7p5ar7b1dpo27o768e6iq8i.apps.googleusercontent.com',
+		function (e, login) {
+			if (e) {
+				console.log(e);
+			} else {
+				const payload = login.getPayload();
+				userid = payload['sub'];
+				if (userid === morgan) {
+					res.json({signIn: 'succesful', admin: false, editable: true})
+				} else {
+					if (req.query.id) {
+						const tutorialInfo = {
+							tutorialID: tutId
+						};
+						validateUser(userid, tutorialInfo, function (err, validated) {
+							if (validated) {
+								res.json({signIn: 'succesful', admin: false, tutorial: true, editable: true})
+							} else {
+								res.json({signIn: 'succesful', admin: false, tutorial: true, editable: false})
+							}
+						})
+					} else {
+						res.json({signIn: 'succesful', admin: false, tutorial: false})
+					}
+				}
+			}
+		});
+});
+
+app.post('/api/edit-tutorial', function (req, res) {
+	const token = req.body.tokenId;
+	const tutorialInfo = {
+			tutorialID: req.body.tutorialID,
+			author: req.body.author,
+			title: req.body.title,
+			link: req.body.link,
+			desc: req.body.desc,
+			summary: req.body.summary
+		}
+	;
 	let userid = '';
 	client.verifyIdToken(
 		token,
@@ -241,15 +288,35 @@ app.post('/api/auth-user', function (req, res) {
 						admin: true
 					}));
 				} else {
-					res.writeHead(200, {'Content-Type': 'application/json'});
-					res.end(JSON.stringify({
-						signIn: 'succesful',
-						admin: false
-					}));
+					validateUser(userid, tutorialInfo, function (err, validated, tutorialInfo) {
+						if (err) return console.log(err);
+						if (validated) {
+							const sql = 'UPDATE tutorials SET title = ' + SqlString.escape(tutorialInfo.title) + 'link = ' + SqlString.escape(tutorialInfo.link) + 'description = ' + SqlString.escape(tutorialInfo.desc) + 'summary = ' + SqlString.escape(tutorialInfo.summary) + 'author = ' + SqlString.escape(tutorialInfo.author) + ' WHERE id = ' + SqlString.escape(tutorialInfo.tutorialID)
+						}
+					});
 				}
 			}
 		});
+
 });
+
+function validateUser(userid, tutorialInfo, cb) {
+	console.log(tutorialInfo);
+	con.query("SELECT * FROM tutorials WHERE id = " + SqlString.escape(tutorialInfo.tutorialID), function (err, result) {
+		if (err) {
+			console.log(err);
+			cb(err, null, null)
+		} else {
+			console.log(result);
+			if (userid === result[0].authToken) {
+				cb(null, true, tutorialInfo)
+			} else {
+				cb(null, false, null)
+			}
+		}
+	});
+}
+
 /* Utility
 app.get('/api/set-text', function (req, res) {
 	const sqlTitle = 'ALTER TABLE tutorials MODIFY title TEXT;';

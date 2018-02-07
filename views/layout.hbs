@@ -37,8 +37,8 @@
         <div class="divider"></div>
     </li>
     <li style="margin: 0 10px 0 10px">
-        <input id="search" class="inline search-nav" title="Search" type="text" placeholder="Search Tutorials"
-               onkeyup="if(event.keyCode === 13) { document.location.href = '/search?q=' + (document.getElementById('search').value).replace(/ /g, '+'); }">
+        <input id="side-search" class="inline search-nav" title="Search" type="text" placeholder="Search Tutorials"
+               onkeyup="if(event.keyCode === 13) { document.location.href = '/search?q=' + (document.getElementById('side-search').value).replace(/ /g, '+'); }">
         <div class="center">
             <button onclick="document.location.href = '/search?q=' + (document.getElementById('search').value).replace(/ /g, '+');"
                     class="inline waves-effect waves-light btn"><i class="material-icons">search</i></button>
@@ -84,7 +84,7 @@
                 <li><a href="about" style="margin-right: 25px;" class="nav-item">About</a></li>
                 <li>
                     <input id="search" class="search-nav white-text" title="Search" type="text" placeholder="Search Tutorials"
-                           onkeyup="if(event.keyCode === 13) { document.location.href = '/search?q=' + (document.getElementById('search').value).replace(/ /g, '+'); }">
+                           onkeyup="if(event.keyCode === 13) { document.location.href = '/search?q=' + $('#search').val().replace(/ /g, '+'); }">
                 </li>
                 <li><a href="search?q="
                        onclick="document.location.href = '/search?q=' + (document.getElementById('search').value).replace(/ /g, '+');"
@@ -104,8 +104,9 @@
 
             </ul>
         </div>
+        
     </nav>
-    <div id="g-signIn" class="g-signin2 right hide-on-med-and-down" style="margin-top: 13px; margin-right: 5px;"
+    <div id="g-signIn" class="g-signin2 right hide-on-med-and-down" style="position: fixed; right: 0; margin-top: 13px; margin-right: 5px;"
          data-theme="dark"
          data-onsuccess="onSignIn"></div>
 </div>
@@ -124,6 +125,7 @@
     let element = document.querySelector('.sidenav');
     let sidenav = new M.Sidenav(element);
     $('.dropdown-trigger').dropdown();
+    $('.modal').modal();
 </script>
 </body>
 

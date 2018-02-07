@@ -1,37 +1,4 @@
 var idToken;
-function submitTutorial() {
-    var title = $('#form-title').val();
-    var desc = $('#tutorial-details').val();
-    var url = $('#form-link').val();
-    var username = $('#username').val();
-    var summary = $('#tutorial-summary').val();
-    var allWords = title.concat(desc, ' ', url, ' ', username, ' ', summary);
-    var swearRequest = new XMLHttpRequest();
-    swearRequest.open('GET', '/Libraries/swearWords.json', false);
-    swearRequest.send();
-    var swears = JSON.parse(swearRequest.responseText);
-    toastr.options.preventDuplicates = true;
-    for (var i = 0; i < swears.length; i++) {
-        if (allWords.toLowerCase().includes(swears[i].toLowerCase())) {
-            toastr.warning('<div>Your tutorial has one or more forbbiden words. Please remove them and submit again.</div><div><a class="toastr" style="color: #000;" href="https://github.com/LDNOOBW/List-of-Dirty-Naughty-Obscene-and-Otherwise-Bad-Words/blob/master/en" target="_blank">Forbidden Words (Click)</a></div>', { closeButton: true });
-            return;
-        }
-    }
-    var submitUrl = "/api/add-tutorial?title=" + encodeURIComponent(title) + "&link=" + encodeURIComponent(url) + "&desc=" + encodeURIComponent(desc) + "&summary=" + encodeURIComponent(summary) + "&author=" + encodeURIComponent(username);
-    console.log(submitUrl);
-    $.ajax({
-        method: 'post',
-        url: submitUrl,
-        success: function(result) {
-            console.log(result);
-            window.location.href = 'submitted';
-        },
-        error: function(result, err) {
-            console.log("err", err);
-            console.log(result);
-        }
-    });
-}
 
 function recaptchaCallback() {
     $('#submitBtn').removeAttr('disabled');
@@ -44,11 +11,13 @@ function onSignIn(googleUser) {
 	var profile = googleUser.getBasicProfile();
     // noinspection JSUnresolvedFunction
 	idToken = googleUser.getAuthResponse().id_token;
+	$('#google-token').val(idToken);
     $.ajax({
         method: 'post',
         url: '/api/auth-user',
         data: {
-            tokenId: idToken
+            tokenId: idToken,
+			id: getQueryString('id')
         },
         success: function (result) {
             console.log(result);
@@ -130,7 +99,7 @@ function loadTutorial() {
         method: 'post',
         url: "/api/get-tutorial?id=" + getQueryString('id'),
         success: function(result1) {
-            var tutorial = result1.searchResults[0];
+            var tutorial = result1.tutorialResults[0];
             document.getElementById('tutorial-title').innerHTML = tutorial.title;
             document.getElementById('creator-name').innerHTML = tutorial.author;
             // noinspection JSUnresolvedVariable
@@ -163,4 +132,20 @@ function removeTutorial() {
             console.log(result);
         }
     });
+}
+
+function editTutorial() {
+	$.ajax({
+		url: "/api/check-user",
+		method: 'post',
+		data: {
+			tokenId: idToken,
+			tutorialID: getQueryString('id')
+		},
+		success: function(result){
+			if (result.edited) {
+			    M.toast({html: 'Successfully edited tutorial. Please reload to see changes'})
+            }
+		}
+	});
 }

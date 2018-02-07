@@ -18,6 +18,7 @@
     "mysql": "^2.15.0",
     "recaptcha-verify": "^0.1.1",
     "serve-favicon": "~2.4.5",
+    "sqlstring": "^2.3.0",
     "swearjar": "^0.2.0"
   }
 }
