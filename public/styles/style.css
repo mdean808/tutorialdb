@@ -34,6 +34,10 @@ body {
 #search:focus + label {
   color: #5bc0de;
 }
+img {
+  max-width: 100%;
+  height: auto;
+}
 
 .inline {
   display: inline-block;

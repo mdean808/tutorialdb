@@ -3,7 +3,7 @@
 
 <head>
     <title>TutorialDB - {{{title}}}</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0"/>
     <meta charset="utf-8"/>
     <meta content="A volunteer run list of most tutorials on the internet!" name="description">
     <meta name=viewport content='width=320'>
@@ -26,7 +26,7 @@
 </head>
 
 <body>
-<ul id="slide-out" class="sidenav">
+<ul id="slide-out" class="sidenav" style="width: 250px;">
     <li><a class="waves-effect" href="index"><i class="material-icons">home</i>Home</a></li>
     <li>
         <div class="divider"></div>
@@ -38,9 +38,11 @@
     </li>
     <li style="margin: 0 10px 0 10px">
         <input id="side-search" class="inline search-nav" title="Search" type="text" placeholder="Search Tutorials"
-               onkeyup="if(event.keyCode === 13) { document.location.href = '/search?q=' + (document.getElementById('side-search').value).replace(/ /g, '+'); }">
+        <input id="search" class="search-nav white-text" title="Search" type="text"
+               placeholder="Search Tutorials"
+               onkeyup="if(event.keyCode === 13) { document.location.href = '/search?q=' + $('#side-search').val().replace(/ /g, '+'); }">
         <div class="center">
-            <button onclick="document.location.href = '/search?q=' + (document.getElementById('search').value).replace(/ /g, '+');"
+            <button onclick="document.location.href = '/search?q=' + (document.getElementById('side-search').value).replace(/ /g, '+');"
                     class="inline waves-effect waves-light btn"><i class="material-icons">search</i></button>
         </div>
     </li>
@@ -125,10 +127,12 @@
 <script type="text/javascript" src="/javascript/index.js"></script>
 <script type="text/javascript" src="/javascript/showdown-prettify.min.js"></script>
 <script>
-    let element = document.querySelector('.sidenav');
-    let sidenav = new M.Sidenav(element);
-    $('.dropdown-trigger').dropdown();
-    $('.modal').modal();
+    $(document).ready(function () {
+        let element = document.querySelector('.sidenav');
+        let sidenav = new M.Sidenav(element);
+        $('.dropdown-trigger').dropdown();
+        $('.modal').modal();
+    })
 </script>
 </body>
 

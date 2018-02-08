@@ -64,7 +64,6 @@ app.get('/submit-captcha', function (req, res) {
 						} else {
 							const payload = login.getPayload();
 							authToken = payload['sub'];
-							console.log(authToken, title);
 							const sql = "INSERT INTO tutorials (title, link, description, summary, author, authToken) VALUES (" + SqlString.escape(title) + ", " + SqlString.escape(link) + ", " + SqlString.escape(desc) + ", " + SqlString.escape(summary) + ", " + SqlString.escape(username) + ", " + SqlString.escape(authToken) + ")";
 							con.query(sql, function (err, result) {
 								if (err) {
@@ -165,7 +164,6 @@ app.post('/api/search-tutorials', function (req, res) {
 				for (let i = 0; i < result.length; i++) {
 					delete result[i].authToken;
 				}
-				console.log(result);
 				res.writeHead(200, {'Content-Type': 'application/json'});
 				res.end(JSON.stringify({
 					searchResults: result
@@ -211,7 +209,6 @@ app.post('/api/delete-tutorial', function (req, res) {
 			if (err) {
 				console.log(err);
 			} else {
-				console.log(result);
 				res.writeHead(200, {'Content-Type': 'application/json'});
 				res.end(JSON.stringify({
 					delete: 'Succesful: tutorial number ' + tutorialID + ' deleted.'
@@ -287,7 +284,6 @@ app.post('/api/edit-tutorial', function (req, res) {
 							console.log(err);
 							res.redirect('/tutorial?id=' + tutorialInfo.tutorialID + '&error=There was an error');
 						} else {
-							console.log(result);
 							res.redirect('/tutorial?id=' + tutorialInfo.tutorialID + '&error=Successfully edited tutorial');
 						}
 					});
@@ -304,7 +300,6 @@ app.post('/api/edit-tutorial', function (req, res) {
 									console.log(err);
 									res.redirect('/tutorial?id=' + tutorialInfo.tutorialID + '&error=There was an error');
 								} else {
-									console.log(result);
 									res.redirect('/tutorial?id=' + tutorialInfo.tutorialID + '&error=Successfully edited tutorial');
 								}
 							});
@@ -317,13 +312,11 @@ app.post('/api/edit-tutorial', function (req, res) {
 });
 
 function validateUser(userid, tutorial, cb) {
-	console.log(tutorial);
 	con.query("SELECT * FROM tutorials WHERE id = " + SqlString.escape(tutorial.tutorialID), function (err, result) {
 		if (err) {
 			console.log(err);
 			cb(err, null, null)
 		} else {
-			console.log(result);
 			if (userid === result[0].authToken) {
 				cb(null, true, tutorial)
 			} else {
@@ -385,7 +378,6 @@ app.get('/api/set-text', function (req, res) {
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
-	console.log(req);
 	const err = new Error('Not Found');
 	err.status = 404;
 	next(err);

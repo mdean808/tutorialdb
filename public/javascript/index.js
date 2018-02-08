@@ -74,10 +74,12 @@ function search() {
                 // noinspection JSUnresolvedVariable
 				document.getElementById('searchResults').innerHTML += theSnippet.replace(/%TITLE%/g, result.title).replace(/%DESCRIPTION%/g, new showdown.Converter().makeHtml(result.summary)).replace(/%LINK%/g, "tutorial?id=" + result.id);
             }
+			$('#loading').remove();
         },
         error: function(result, err) {
             console.log("err", err);
             console.log(result);
+			$('#loading').remove();
         }
     });
 }
