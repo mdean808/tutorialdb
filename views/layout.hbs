@@ -37,7 +37,7 @@
         <div class="divider"></div>
     </li>
     <li style="margin: 0 10px 0 10px">
-        <input id="side-search" class="inline search-nav" title="Search" type="text" placeholder="Search Tutorials"
+        <input id="side-search" class="inline search-nav" title="Search" type="text" placeholder="Search Tutorials">
         <input id="search" class="search-nav white-text" title="Search" type="text"
                placeholder="Search Tutorials"
                onkeyup="if(event.keyCode === 13) { document.location.href = '/search?q=' + $('#side-search').val().replace(/ /g, '+'); }">
@@ -49,7 +49,7 @@
     <li>
         <div class="divider"></div>
     </li>
-    <li><a class="waves-effect" id="g-signIn1"
+    <li><a class="waves-effect g-signin2" id="g-signIn1"
            data-onsuccess="onSignIn">Login</a>
         <a id="nav-welcome" style="display: none;">Welcome, !</a>
     </li>

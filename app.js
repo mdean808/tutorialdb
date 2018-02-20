@@ -64,7 +64,7 @@ app.get('/submit-captcha', function (req, res) {
 						} else {
 							const payload = login.getPayload();
 							authToken = payload['sub'];
-							const sql = "INSERT INTO tutorials (title, link, description, summary, author, authToken) VALUES (" + SqlString.escape(title) + ", " + SqlString.escape(link) + ", " + SqlString.escape(desc) + ", " + SqlString.escape(summary) + ", " + SqlString.escape(username) + ", " + SqlString.escape(authToken) + ")";
+							const sql = "INSERT INTO tutorials (title, link, description, summary, author, authToken, views) VALUES (" + SqlString.escape(title) + ", " + SqlString.escape(link) + ", " + SqlString.escape(desc) + ", " + SqlString.escape(summary) + ", " + SqlString.escape(username) + ", " + SqlString.escape(authToken) + ", " + 0 +")";
 							con.query(sql, function (err, result) {
 								if (err) {
 									console.log(err);
@@ -127,12 +127,20 @@ app.post('/api/create-db', function (req, res) {
 			console.log(result);
 		}
 	});
+	});
 });
 */
-
-/* Crate table (used locally)
-app.get('/api/create-table', function (req, res) {
-	const sql = "CREATE TABLE tutorials (id INT AUTO_INCREMENT PRIMARY KEY, title VARCHAR(255), link VARCHAR(255), description VARCHAR(255), summary VARCHAR(255), author VARCHAR(255))";
+// Remake table (used locally)
+function redoTable() {
+	let sql = "DROP TABLE tutorials";
+	con.query(sql, function (err, result) {
+		if (err) {
+			console.log(err);
+		} else {
+			console.log("Table dropped");
+		}
+	});
+	sql = "CREATE TABLE tutorials (id INT AUTO_INCREMENT PRIMARY KEY, title VARCHAR(255), link VARCHAR(255), description VARCHAR(255), summary VARCHAR(255), author VARCHAR(255), authToken VARCHAR(255), views INT)";
 	con.query(sql, function (err, result) {
 		if (err) {
 			console.log(err);
@@ -140,8 +148,8 @@ app.get('/api/create-table', function (req, res) {
 			console.log("Table created");
 		}
 	});
-});
-<*/
+}
+
 app.post('/api/get-all-tutorials', function (req, res) {
 	con.query("SELECT * FROM tutorials", function (err, result) {
 		if (err) {
@@ -162,6 +170,7 @@ app.post('/api/search-tutorials', function (req, res) {
 				console.log(err)
 			} else {
 				for (let i = 0; i < result.length; i++) {
+					// noinspection JSUnresolvedVariable
 					delete result[i].authToken;
 				}
 				res.writeHead(200, {'Content-Type': 'application/json'});
@@ -180,12 +189,20 @@ app.post('/api/get-tutorial', function (req, res) {
 			console.log(err);
 		} else {
 			for (let i = 0; i < result.length; i++) {
+				// noinspection JSUnresolvedVariable
 				delete result[i].authToken;
 			}
 			res.writeHead(200, {'Content-Type': 'application/json'});
 			res.end(JSON.stringify({
 				tutorialResults: result
 			}));
+		}
+	});
+	con.query("UPDATE tutorials SET views = views + 1 WHERE id = '" + req.query.id + "'", function (err, result) {
+		if (err) {
+			console.log(err);
+		} else {
+			console.log('updated view counter')
 		}
 	});
 });
@@ -205,7 +222,7 @@ app.post('/api/delete-tutorial', function (req, res) {
 		});
 	if (userid === morgan) {
 		const sql = "DELETE FROM tutorials WHERE id = " + SqlString.escape(tutorialID);
-		con.query(sql, function (err, result) {
+		con.query(sql, function (err) {
 			if (err) {
 				console.log(err);
 			} else {
@@ -278,8 +295,9 @@ app.post('/api/edit-tutorial', function (req, res) {
 				const payload = login.getPayload();
 				userid = payload['sub'];
 				if (userid === morgan) {
-					const sql = 'UPDATE tutorials SET title = ' + SqlString.escape(tutorialInfo.title) + ', link = ' + SqlString.escape(tutorialInfo.link) +  ', description = ' + SqlString.escape(tutorialInfo.desc) + ', summary = ' + SqlString.escape(tutorialInfo.summary) + ' WHERE id = ' + SqlString.escape(tutorialInfo.tutorialID);
-					con.query(sql, function (err, result) {
+					console.log('double oof');
+					const sql = 'UPDATE tutorials SET title = ' + SqlString.escape(tutorialInfo.title) + ', link = ' + SqlString.escape(tutorialInfo.link) + ', description = ' + SqlString.escape(tutorialInfo.desc) + ', summary = ' + SqlString.escape(tutorialInfo.summary) + ' WHERE id = ' + SqlString.escape(tutorialInfo.tutorialID);
+					con.query(sql, function (err) {
 						if (err) {
 							console.log(err);
 							res.redirect('/tutorial?id=' + tutorialInfo.tutorialID + '&error=There was an error');
@@ -288,6 +306,7 @@ app.post('/api/edit-tutorial', function (req, res) {
 						}
 					});
 				} else {
+					console.log('triple oof');
 					validateUser(userid, tutorialInfo, function (err, validated, tutorial) {
 						if (err) return function () {
 							console.log(err);
@@ -295,7 +314,7 @@ app.post('/api/edit-tutorial', function (req, res) {
 						};
 						if (validated) {
 							const sql = 'UPDATE tutorials SET title = ' + SqlString.escape(tutorial.title) + ', link = ' + SqlString.escape(tutorial.link) + ', description = ' + SqlString.escape(tutorial.desc) + ', summary = ' + SqlString.escape(tutorial.summary) + ' WHERE id = ' + SqlString.escape(tutorial.tutorialID);
-							con.query(sql, function (err, result) {
+							con.query(sql, function (err) {
 								if (err) {
 									console.log(err);
 									res.redirect('/tutorial?id=' + tutorialInfo.tutorialID + '&error=There was an error');
@@ -303,12 +322,13 @@ app.post('/api/edit-tutorial', function (req, res) {
 									res.redirect('/tutorial?id=' + tutorialInfo.tutorialID + '&error=Successfully edited tutorial');
 								}
 							});
+						} else {
+							res.redirect('/tutorial?id=' + tutorialInfo.tutorialID + '&error=Please sign in!');
 						}
 					});
 				}
 			}
 		});
-
 });
 
 function validateUser(userid, tutorial, cb) {
@@ -317,6 +337,7 @@ function validateUser(userid, tutorial, cb) {
 			console.log(err);
 			cb(err, null, null)
 		} else {
+			// noinspection JSUnresolvedVariable
 			if (userid === result[0].authToken) {
 				cb(null, true, tutorial)
 			} else {
@@ -326,55 +347,6 @@ function validateUser(userid, tutorial, cb) {
 	});
 }
 
-/* Utility
-app.get('/api/set-text', function (req, res) {
-	const sqlTitle = 'ALTER TABLE tutorials MODIFY title TEXT;';
-	const sqlLink = 'ALTER TABLE tutorials MODIFY link TEXT;';
-	const sqlDescription = 'ALTER TABLE tutorials MODIFY description TEXT;';
-	const sqlSummary = 'ALTER TABLE tutorials MODIFY summary TEXT;';
-	const sqlAuthor = 'ALTER TABLE tutorials MODIFY author TEXT;';
-
-	con.query(sqlTitle, function (err, result) {
-		if (err) {
-			console.log(err)
-		} else {
-			console.log('Set title as text');
-		}
-	});
-	con.query(sqlLink, function (err, result) {
-		if (err) {
-			console.log(err)
-		} else {
-			console.log('Set link as text');
-		}
-	});
-	con.query(sqlDescription, function (err, result) {
-		if (err) {
-			console.log(err)
-		} else {
-			console.log('Set desc as text');
-		}
-	});
-	con.query(sqlSummary, function (err, result) {
-		if (err) {
-			console.log(err)
-		} else {
-			console.log('Set summary as text');
-		}
-	});
-	con.query(sqlAuthor, function (err, result) {
-		if (err) {
-			console.log(err)
-		} else {
-			console.log('Set author as text');
-		}
-	})
-	res.writeHead(200, {'Content-Type': 'application/json'});
-	res.end(JSON.stringify({
-		text: 'succesful'
-	}));
-});
-*/
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
