@@ -11,6 +11,7 @@ const SqlString = require('sqlstring');
 
 const index = require('./routes/index');
 const users = require('./routes/users');
+const session = require('express-session');
 
 const app = express();
 const auth = new GoogleAuth;
@@ -31,6 +32,10 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(session({
+	secret: 'seeeEeeeEEed for thot',
+	resave: false,
+}));
 
 app.use('/', index);
 app.use('/users', users);
@@ -64,7 +69,7 @@ app.get('/submit-captcha', function (req, res) {
 						} else {
 							const payload = login.getPayload();
 							authToken = payload['sub'];
-							const sql = "INSERT INTO tutorials (title, link, description, summary, author, authToken, views) VALUES (" + SqlString.escape(title) + ", " + SqlString.escape(link) + ", " + SqlString.escape(desc) + ", " + SqlString.escape(summary) + ", " + SqlString.escape(username) + ", " + SqlString.escape(authToken) + ", " + 0 +")";
+							const sql = "INSERT INTO tutorials (title, link, description, summary, author, authToken, views) VALUES (" + SqlString.escape(title) + ", " + SqlString.escape(link) + ", " + SqlString.escape(desc) + ", " + SqlString.escape(summary) + ", " + SqlString.escape(username) + ", " + SqlString.escape(authToken) + ", " + 0 + ")";
 							con.query(sql, function (err, result) {
 								if (err) {
 									console.log(err);
@@ -130,6 +135,7 @@ app.post('/api/create-db', function (req, res) {
 	});
 });
 */
+
 // Remake table (used locally)
 function redoTable() {
 	let sql = "DROP TABLE tutorials";
@@ -192,17 +198,27 @@ app.post('/api/get-tutorial', function (req, res) {
 				// noinspection JSUnresolvedVariable
 				delete result[i].authToken;
 			}
-			res.writeHead(200, {'Content-Type': 'application/json'});
-			res.end(JSON.stringify({
-				tutorialResults: result
-			}));
-		}
-	});
-	con.query("UPDATE tutorials SET views = views + 1 WHERE id = '" + req.query.id + "'", function (err, result) {
-		if (err) {
-			console.log(err);
-		} else {
-			console.log('updated view counter')
+			if (!req.session.views) {
+				req.session.views = [];
+			}
+			if (req.session.views.indexOf(req.query.id) === -1) {
+				con.query("UPDATE tutorials SET views = views + 1 WHERE id = '" + req.query.id + "'", function (err) {
+					if (err) {
+						console.log(err);
+					} else {
+						req.session.views.push(req.query.id);
+						res.writeHead(200, {'Content-Type': 'application/json'});
+						res.end(JSON.stringify({
+							tutorialResults: result
+						}));
+					}
+				});
+			} else {
+				res.writeHead(200, {'Content-Type': 'application/json'});
+				res.end(JSON.stringify({
+					tutorialResults: result
+				}));
+			}
 		}
 	});
 });

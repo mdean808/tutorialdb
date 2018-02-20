@@ -21,7 +21,9 @@ function onSignIn(googleUser) {
 		},
 		success: function (result) {
 			console.log(result);
-			$('#edit').show();
+			if (result.editable) {
+				$('#edit').show();
+			}
 			$('#g-signIn').hide();
 			$('#g-signIn1').hide();
 			$('#logged-in').show();

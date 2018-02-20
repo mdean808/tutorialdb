@@ -66,10 +66,12 @@
 <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
 <script src="/javascript/index.js"></script>
 <script>
-    $('pre code').each(function (i, block) {
-        hljs.highlightBlock(block);
+    $(document).ready(function () {
+        $('#edit').hide();
+        $('pre code').each(function (i, block) {
+            hljs.highlightBlock(block);
+        });
+        loadTutorial();
+        $('#tutorial-id').val(getQueryString('id'));
     });
-    loadTutorial();
-    $('#edit').hide();
-    $('#tutorial-id').val(getQueryString('id'));
 </script>
