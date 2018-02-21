@@ -255,6 +255,22 @@ app.post('/api/delete-tutorial', function (req, res) {
 		}));
 	}
 });
+
+app.post('/api/get-popular', function (req, res) {
+	const sql = "SELECT id, title, link, description, summary, author, views FROM tutorials ORDER BY views DESC LIMIT 4";
+	con.query(sql, function (err, data) {
+		if (err) {
+			console.log(err);
+		} else {
+			res.writeHead(200, {'Content-Type': 'application/json'});
+			res.end(JSON.stringify({
+				tutorials: data
+			}));
+		}
+	});
+});
+
+
 let tutId;
 app.post('/api/auth-user', function (req, res) {
 	const token = req.body.tokenId;
