@@ -168,16 +168,16 @@ function editTutorial() {
 
 function getTopTutorials() {
 	$.ajax({
-		url: "/api/get-popular",
+		url: "/api/get-viewed",
 		method: 'post',
 		success: function (res) {
 			console.log(res);
 			if (res) {
-				for (var  i = 0; i < res.tutorials.length; i++){
-					$('#tutorials').append('<div class="col s12 m3">\n' +
+				for (var i = 0; i < res.tutorials.length; i++) {
+					$('#viewed').append('<div class="col s12 m3">\n' +
 						'                <div class="card z-depth-2 hoverable">\n' +
 						'                    <div class="card-content">\n' +
-						'                        <span id="title" style="line-height: 10px; margin-left: -2px" class="card-title">' + res.tutorials[i].title + '</span>\n' +
+						'                        <span id="title" style"margin-left: -2px" class="card-title">' + res.tutorials[i].title + '</span>\n' +
 						'                        <small style="font-weight: bold; margin-top: -5px" id="author" class="grey-text text-darken-2">By ' + res.tutorials[i].author + '</small>\n' +
 						'                        <p id="summary" class="grey-text text-darken-1">' + res.tutorials[i].summary + '</p>\n' +
 						'                    </div>\n' +
@@ -187,6 +187,63 @@ function getTopTutorials() {
 						'                </div>\n' +
 						'            </div>')
 				}
+				$('#loading-viewed').hide();
+
+			}
+		}
+	});
+}
+
+function getPopTutorials() {
+	$.ajax({
+		url: "/api/get-pop",
+		method: 'post',
+		success: function (res) {
+			console.log(res);
+			if (res) {
+				for (var i = 0; i < res.tutorials.length; i++) {
+					$('#popular').append('<div class="col s12 m3">\n' +
+						'                <div class="card z-depth-2 hoverable">\n' +
+						'                    <div class="card-content">\n' +
+						'                        <span id="title" style"margin-left: -2px" class="card-title">' + res.tutorials[i].title + '</span>\n' +
+						'                        <small style="font-weight: bold; margin-top: -5px" id="author" class="grey-text text-darken-2">By ' + res.tutorials[i].author + '</small>\n' +
+						'                        <p id="summary" class="grey-text text-darken-1">' + res.tutorials[i].summary + '</p>\n' +
+						'                    </div>\n' +
+						'                    <div class="card-action center">\n' +
+						'                        <a id="link" href="tutorial?id=' + res.tutorials[i].id + '" class="btn">Tutorial</a>\n' +
+						'                    </div>\n' +
+						'                </div>\n' +
+						'            </div>')
+				}
+			}
+			$('#loading-pop').hide();
+		}
+	});
+}
+
+function getRandTutorials() {
+	$.ajax({
+		url: "/api/get-viewed",
+		method: 'post',
+		success: function (res) {
+			console.log(res);
+			if (res) {
+				for (var i = 0; i < res.tutorials.length; i++) {
+					$('#random').append('<div class="col s12 m3">\n' +
+						'                <div class="card z-depth-2 hoverable">\n' +
+						'                    <div class="card-content">\n' +
+						'                        <span id="title" style"margin-left: -2px" class="card-title">' + res.tutorials[i].title + '</span>\n' +
+						'                        <small style="font-weight: bold; margin-top: -5px" id="author" class="grey-text text-darken-2">By ' + res.tutorials[i].author + '</small>\n' +
+						'                        <p id="summary" class="grey-text text-darken-1">' + res.tutorials[i].summary + '</p>\n' +
+						'                    </div>\n' +
+						'                    <div class="card-action center">\n' +
+						'                        <a id="link" href="tutorial?id=' + res.tutorials[i].id + '" class="btn">Tutorial</a>\n' +
+						'                    </div>\n' +
+						'                </div>\n' +
+						'            </div>')
+				}
+				$('#loading-rand').hide();
+
 			}
 		}
 	});

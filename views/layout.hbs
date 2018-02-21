@@ -23,6 +23,8 @@
           href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-alpha.2/css/materialize.min.css">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link rel="stylesheet" href="styles/style.css">
+    <link rel='stylesheet' media='screen and (max-width: 990px)' href='styles/mobile.css' />
+
 </head>
 
 <body>
@@ -37,8 +39,7 @@
         <div class="divider"></div>
     </li>
     <li style="margin: 0 10px 0 10px">
-        <input id="side-search" class="inline search-nav" title="Search" type="text" placeholder="Search Tutorials">
-        <input id="search" class="search-nav white-text" title="Search" type="text"
+        <input id="search" class="search-nav" title="Search" type="text"
                placeholder="Search Tutorials"
                onkeyup="if(event.keyCode === 13) { document.location.href = '/search?q=' + $('#side-search').val().replace(/ /g, '+'); }">
         <div class="center">
@@ -49,20 +50,20 @@
     <li>
         <div class="divider"></div>
     </li>
-    <li><a class="waves-effect g-signin2" id="g-signIn1"
-           data-onsuccess="onSignIn">Login</a>
+    <li style="line-height: 0;"><div class="g-signin2 center-align" data-theme="dark" id="g-signIn1"
+           data-onsuccess="onSignIn">Login</div>
         <a id="nav-welcome" style="display: none;">Welcome, !</a>
     </li>
 
-    <li id="nav-logged-in" style="margin-left: 10px; display: none;">
-        <a href="#">Your Tutorials</a>
-        <a href="signedout" onclick="signOut();">Sign out</a></li>
+    <li id="nav-logged-in" style="display: none;">
+        <a href="#" class="waves-effect">Your Tutorials</a>
+        <a href="signed-out" class="waves-effect" onclick="signOut();">Sign out</a></li>
 </ul>
 
 <ul id='logged-in' class='dropdown-content' style="color: #5bc0de">
     <li class="gray lighten-3"><a href="#" style="color: #5bc0de;">Your Tutorials</a></li>
     <li class="divider"></li>
-    <li><a href="signedout" style="color: #5bc0de" onclick="signOut();">Sign out</a></li>
+    <li><a href="signed-out" style="color: #5bc0de" onclick="signOut();">Sign out</a></li>
 </ul>
 <div class="navbar-fixed">
     <nav>
@@ -75,12 +76,12 @@
             </ul>
             <ul class="show-on-medium-and-down hide-on-med-and-up">
                 <li>
-                    <img style="margin-top: 11px; margin-left: 5px;" src="icons/favicon.ico">
+                    <img style="margin-top: 11px; margin-left: 10px;" src="icons/favicon.ico">
                 </li>
                 <li><a href="index" class="nav-logo">TutorialDB</a></li>
             </ul>
             <ul class="left hide-on-med-and-down">
-                <li><img style="margin-top: 15px; margin-left: 5px;" src="icons/favicon.ico"></li>
+                <li><img style="margin-top: 16px; margin-left: 10px;" src="icons/favicon.ico"></li>
                 <li><a href="index" class="nav-logo">TutorialDB</a></li>
                 <li><a href="tutorials" class="nav-item">Tutorials</a></li>
                 <li><a href="about" style="margin-right: 25px;" class="nav-item">About</a></li>
@@ -129,7 +130,13 @@
 <script>
     $(document).ready(function () {
     	if (window.location.pathname === '/tutorials') {
-            getTopTutorials();F
+            getTopTutorials();
+            getPopTutorials();
+            getRandTutorials();
+            $('.toc-wrapper').pushpin({
+                offset: 360
+            });
+            $('.scrollspy').scrollSpy();
         }
         var element = document.querySelector('.sidenav');
         var sidenav = new M.Sidenav(element);
