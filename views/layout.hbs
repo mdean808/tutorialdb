@@ -129,10 +129,10 @@
 <script>
     $(document).ready(function () {
     	if (window.location.pathname === '/tutorials') {
-            getTopTutorials();
+            getTopTutorials();F
         }
-        let element = document.querySelector('.sidenav');
-        let sidenav = new M.Sidenav(element);
+        var element = document.querySelector('.sidenav');
+        var sidenav = new M.Sidenav(element);
         $('.dropdown-trigger').dropdown();
         $('.modal').modal();
     })

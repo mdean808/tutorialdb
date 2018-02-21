@@ -69,7 +69,7 @@ app.get('/submit-captcha', function (req, res) {
 						} else {
 							const payload = login.getPayload();
 							authToken = payload['sub'];
-							const sql = "INSERT INTO tutorials (title, link, description, summary, author, authToken, views) VALUES (" + SqlString.escape(title) + ", " + SqlString.escape(link) + ", " + SqlString.escape(desc) + ", " + SqlString.escape(summary) + ", " + SqlString.escape(username) + ", " + SqlString.escape(authToken) + ", " + 0 + ")";
+							const sql = "INSERT INTO tutorials (title, link, description, summary, author, authToken, views, score) VALUES (" + SqlString.escape(title) + ", " + SqlString.escape(link) + ", " + SqlString.escape(desc) + ", " + SqlString.escape(summary) + ", " + SqlString.escape(username) + ", " + SqlString.escape(authToken) + ", " + 0 + ", " + 0 + ")";
 							con.query(sql, function (err, result) {
 								if (err) {
 									console.log(err);
@@ -146,7 +146,7 @@ function redoTable() {
 			console.log("Table dropped");
 		}
 	});
-	sql = "CREATE TABLE tutorials (id INT AUTO_INCREMENT PRIMARY KEY, title VARCHAR(255), link VARCHAR(255), description VARCHAR(255), summary VARCHAR(255), author VARCHAR(255), authToken VARCHAR(255), views INT)";
+	sql = "CREATE TABLE tutorials (id INT AUTO_INCREMENT PRIMARY KEY, title VARCHAR(255), link VARCHAR(255), description VARCHAR(255), summary VARCHAR(255), author VARCHAR(255), authToken VARCHAR(255), views INT, score INT)";
 	con.query(sql, function (err, result) {
 		if (err) {
 			console.log(err);
@@ -206,11 +206,17 @@ app.post('/api/get-tutorial', function (req, res) {
 					if (err) {
 						console.log(err);
 					} else {
-						req.session.views.push(req.query.id);
-						res.writeHead(200, {'Content-Type': 'application/json'});
-						res.end(JSON.stringify({
-							tutorialResults: result
-						}));
+						con.query("UPDATE tutorials SET score = score + 1 WHERE id = '" + req.query.id + "'", function (err) {
+							if (err) {
+								console.log(err);
+							} else {
+								req.session.views.push(req.query.id);
+								res.writeHead(200, {'Content-Type': 'application/json'});
+								res.end(JSON.stringify({
+									tutorialResults: result
+								}));
+							}
+						});
 					}
 				});
 			} else {
@@ -379,6 +385,15 @@ function validateUser(userid, tutorial, cb) {
 	});
 }
 
+function setScores() {
+	con.query("UPDATE tutorials SET score = score / 2", function (err, result) {
+		if (err) {
+			console.log(err);
+		}
+	});
+}
+
+setInterval(setScores, 5*60*1000);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
