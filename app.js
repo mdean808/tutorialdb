@@ -194,36 +194,40 @@ app.post('/api/get-tutorial', function (req, res) {
 		if (err) {
 			console.log(err);
 		} else {
-			for (let i = 0; i < result.length; i++) {
-				// noinspection JSUnresolvedVariable
-				delete result[i].authToken;
-			}
-			if (!req.session.views) {
-				req.session.views = [];
-			}
-			if (req.session.views.indexOf(req.query.id) === -1) {
-				con.query("UPDATE tutorials SET views = views + 1 WHERE id = '" + req.query.id + "'", function (err) {
-					if (err) {
-						console.log(err);
-					} else {
-						con.query("UPDATE tutorials SET score = score + 1 WHERE id = '" + req.query.id + "'", function (err) {
-							if (err) {
-								console.log(err);
-							} else {
-								req.session.views.push(req.query.id);
-								res.writeHead(200, {'Content-Type': 'application/json'});
-								res.end(JSON.stringify({
-									tutorialResults: result
-								}));
-							}
-						});
-					}
-				});
+			if (result.length > 0) {
+				for (let i = 0; i < result.length; i++) {
+					// noinspection JSUnresolvedVariable
+					delete result[i].authToken;
+				}
+				if (!req.session.views) {
+					req.session.views = [];
+				}
+				if (req.session.views.indexOf(req.query.id) === -1) {
+					con.query("UPDATE tutorials SET views = views + 1 WHERE id = '" + req.query.id + "'", function (err) {
+						if (err) {
+							console.log(err);
+						} else {
+							con.query("UPDATE tutorials SET score = score + 1 WHERE id = '" + req.query.id + "'", function (err) {
+								if (err) {
+									console.log(err);
+								} else {
+									req.session.views.push(req.query.id);
+									res.writeHead(200, {'Content-Type': 'application/json'});
+									res.end(JSON.stringify({
+										tutorialResults: result
+									}));
+								}
+							});
+						}
+					});
+				} else {
+					res.writeHead(200, {'Content-Type': 'application/json'});
+					res.end(JSON.stringify({
+						tutorialResults: result
+					}));
+				}
 			} else {
-				res.writeHead(200, {'Content-Type': 'application/json'});
-				res.end(JSON.stringify({
-					tutorialResults: result
-				}));
+				res.json({tutorialResults: false})
 			}
 		}
 	});
@@ -254,11 +258,30 @@ app.post('/api/delete-tutorial', function (req, res) {
 				}));
 			}
 		});
-	} else {
-		res.writeHead(200, {'Content-Type': 'application/json'});
-		res.end(JSON.stringify({
-			delete: 'failed: incorrect token'
-		}));
+	} else if (userid) {
+		const tutorialStuff = {
+			tutorialID: tutorialID
+		};
+		validateUser(userid, tutorialStuff, function (err, validated, tutorial) {
+			if (validated) {
+				const sql = "DELETE FROM tutorials WHERE id = " + SqlString.escape(tutorial.tutorialID);
+				con.query(sql, function (err) {
+					if (err) {
+						console.log(err);
+					} else {
+						res.writeHead(200, {'Content-Type': 'application/json'});
+						res.end(JSON.stringify({
+							delete: 'Succesful: tutorial number ' + tutorialID + ' deleted.'
+						}));
+					}
+				});
+			} else {
+				res.writeHead(200, {'Content-Type': 'application/json'});
+				res.end(JSON.stringify({
+					delete: 'failed: incorrect token'
+				}));
+			}
+		});
 	}
 });
 
@@ -324,13 +347,23 @@ app.post('/api/auth-user', function (req, res) {
 						const tutorial = {
 							tutorialID: tutId
 						};
-						validateUser(userid, tutorial, function (err, validated) {
-							if (validated) {
-								res.json({signIn: 'succesful', admin: false, tutorial: true, editable: true})
+						con.query("SELECT * FROM tutorials WHERE id = '" + req.query.id + "'", function (err, result) {
+							if (err) {
+								console.log(err);
 							} else {
-								res.json({signIn: 'succesful', admin: false, tutorial: true, editable: false})
+								if (result.length > 0) {
+									validateUser(userid, tutorial, function (err, validated) {
+										if (validated) {
+											res.json({signIn: 'succesful', admin: false, tutorial: true, editable: true})
+										} else {
+											res.json({signIn: 'succesful', admin: false, tutorial: true, editable: false})
+										}
+									})
+								} else {
+									res.json({signIn: 'succesful', admin: false, tutorial: false, editable: false})
+								}
 							}
-						})
+						});
 					} else {
 						res.json({signIn: 'succesful', admin: false, tutorial: false})
 					}
@@ -359,7 +392,6 @@ app.post('/api/edit-tutorial', function (req, res) {
 				const payload = login.getPayload();
 				userid = payload['sub'];
 				if (userid === morgan) {
-					console.log('double oof');
 					const sql = 'UPDATE tutorials SET title = ' + SqlString.escape(tutorialInfo.title) + ', link = ' + SqlString.escape(tutorialInfo.link) + ', description = ' + SqlString.escape(tutorialInfo.desc) + ', summary = ' + SqlString.escape(tutorialInfo.summary) + ' WHERE id = ' + SqlString.escape(tutorialInfo.tutorialID);
 					con.query(sql, function (err) {
 						if (err) {
@@ -370,7 +402,6 @@ app.post('/api/edit-tutorial', function (req, res) {
 						}
 					});
 				} else {
-					console.log('triple oof');
 					validateUser(userid, tutorialInfo, function (err, validated, tutorial) {
 						if (err) return function () {
 							console.log(err);
@@ -396,6 +427,7 @@ app.post('/api/edit-tutorial', function (req, res) {
 });
 
 function validateUser(userid, tutorial, cb) {
+	console.log(userid, tutorial);
 	con.query("SELECT * FROM tutorials WHERE id = " + SqlString.escape(tutorial.tutorialID), function (err, result) {
 		if (err) {
 			console.log(err);
@@ -419,7 +451,7 @@ function setScores() {
 	});
 }
 
-setInterval(setScores, 5*60*1000);
+setInterval(setScores, 5 * 60 * 1000);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

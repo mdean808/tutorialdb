@@ -1,5 +1,5 @@
 <div class="container">
-    <div class="row">
+    <div class="row" id="tutorial-container">
         <h4 style="color: #000; margin-top: 25px; margin-bottom: 5px;" id="tutorial-title"></h4>
         <small style="margin-left: 1px;">By</small>
         <small id="creator-name"></small>
@@ -8,6 +8,9 @@
         <small id="view-count" class="grey-text text-darken-1"></small>
         <div id="tut-cont"
              style="border: 2px solid #5bc0de; padding: 24px 24px 20px 24px; border-radius: 6px; margin-top: 15px; margin-bottom: 15px;">
+            <div class="row center" id="loading">
+                <img width="64" height="64" src="/icons/loading.gif">
+            </div>
             <p id="tutorial-desc" style="margin-top: 1px;"></p>
             <hr/>
         </div>
@@ -16,8 +19,21 @@
 <div class="container">
     <div class="row center">
         <a data-target="edit-modal" id="edit" class="btn waves-effect waves-light waves-block modal-trigger">Edit</a>
+        <br>
+        <a data-target="delete-modal" id="delete" class="btn red waves-effect waves-light waves-block modal-trigger">Delete</a>
     </div>
 </div>
+
+<div id="delete-modal" class="modal">
+    <div class="modal-content">
+        <div class="row center">
+        <h4>Are you sure you want to delete this tutorial?</h4>
+            <a onclick="removeTutorial()" class="btn red waves-effect waves-light">Confirm</a>
+        </div>
+    </div>
+</div>
+
+
 <div id="edit-modal" class="modal">
     <div class="modal-content">
         <h4>Edit Tutorial</h4>
@@ -68,6 +84,7 @@
 <script>
     $(document).ready(function () {
         $('#edit').hide();
+        $('#delete').hide();
         $('pre code').each(function (i, block) {
             hljs.highlightBlock(block);
         });

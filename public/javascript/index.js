@@ -21,8 +21,9 @@ function onSignIn(googleUser) {
 		},
 		success: function (result) {
 			console.log(result);
-			if (result.editable) {
+			if (result.tutorial) {
 				$('#edit').show();
+				$('#delete').show();
 			}
 			$('#g-signIn').hide();
 			$('#g-signIn1').hide();
@@ -104,23 +105,28 @@ function loadTutorial() {
 	$.ajax({
 		method: 'post',
 		url: "/api/get-tutorial?id=" + getQueryString('id'),
-		success: function (result1) {
-			var tutorial = result1.tutorialResults[0];
-			console.log(tutorial);
-			$('#tutorial-title').html(tutorial.title);
-			$('#form-title').val(tutorial.title);
+		success: function (result) {
+			console.log(result);
+			var tutorial = result.tutorialResults[0];
+			if (result.tutorialResults === false) {
+				M.toast({html: 'This tutorial does not exist'});
+				$('#tutorial-container').hide();
+			} else {
+				$('#tutorial-title').html(tutorial.title);
+				$('#form-title').val(tutorial.title);
 
-			$('#creator-name').html(tutorial.author);
-			$('#view-count').html(tutorial.views.toLocaleString());
-			// noinspection JSUnresolvedVariable
-			$('#tutorial-desc').html(new showdown.Converter().makeHtml(tutorial.description));
-			$('#tutorial-details').html(tutorial.description);
-			$('#tutorial-details-preview').html(new showdown.Converter().makeHtml(document.getElementById('tutorial-details').value));
+				$('#creator-name').html(tutorial.author);
+				$('#view-count').html(tutorial.views.toLocaleString());
+				// noinspection JSUnresolvedVariable
+				$('#tutorial-desc').html(new showdown.Converter().makeHtml(tutorial.description));
+				$('#tutorial-details').html(tutorial.description);
+				$('#tutorial-details-preview').html(new showdown.Converter().makeHtml(document.getElementById('tutorial-details').value));
 
-			$('#tut-cont').append("<a href='" + tutorial.link + "'>" + tutorial.link + "</a>");
-			$('#form-link').val(tutorial.link);
+				$('#tut-cont').append("<a href='" + tutorial.link + "'>" + tutorial.link + "</a>");
+				$('#form-link').val(tutorial.link);
 
-			$('#tutorial-summary').html(tutorial.summary);
+				$('#tutorial-summary').html(tutorial.summary);
+			}
 		},
 		error: function (result, err) {
 			console.log("err", err);
@@ -145,7 +151,10 @@ function removeTutorial() {
 			tutorialID: getQueryString('id')
 		},
 		success: function (result) {
-			console.log(result);
+			if (result.delete.startsWith('Successful')) {
+				M.toast({html: result.delete});
+				setTimeout(window.location.reload, 1500);
+			}
 		}
 	});
 }
