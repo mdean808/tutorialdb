@@ -6,7 +6,9 @@ body {
   font-size: large;
   color: #5bc0de;
 }
-
+a {
+  color: #26a1da;
+}
 .nav-search {
   margin-left: 5px;
   color: #5bc0de;
