@@ -52,13 +52,14 @@ app.get('/submit-captcha', function (req, res) {
 	recaptcha.checkResponse(userResponse, function (error, response) {
 		if (error) {
 			console.log(error);
-		}
-		if (response.success) {
+			res.status(200).redirect('/tutorial-submit?error=Please sign in');
+		} else if (response.success) {
 			const allWords = title.concat(desc, ' ', link, ' ', username, ' ', summary);
 			if (swearjar.profane(allWords)) {
-				res.status(200).redirect('/tutorial-submit?error=profanity');
+				res.status(200).redirect('/tutorial-submit?error=Please remove your profanity!');
 			} else {
 				const token = req.query['g-id'];
+				console.log(token);
 				let authToken = '';
 				client.verifyIdToken(
 					token,
@@ -84,7 +85,7 @@ app.get('/submit-captcha', function (req, res) {
 				// save session.. create user.. save form data.. render page, return json.. etc.
 			}
 		} else {
-			res.status(200).redirect('/tutorial-submit?error=Please+solve+the+ReCaptcha');
+			res.status(200).redirect('/tutorial-submit?error=Please solve the ReCaptcha');
 			// show warning, render page, return a json, etc.
 		}
 	});
@@ -340,34 +341,50 @@ app.post('/api/auth-user', function (req, res) {
 			} else {
 				const payload = login.getPayload();
 				userid = payload['sub'];
-				if (userid === morgan) {
-					res.json({signIn: 'succesful', admin: false, editable: true})
-				} else {
-					if (req.query.id) {
-						const tutorial = {
-							tutorialID: tutId
-						};
-						con.query("SELECT * FROM tutorials WHERE id = '" + req.query.id + "'", function (err, result) {
-							if (err) {
-								console.log(err);
-							} else {
-								if (result.length > 0) {
-									validateUser(userid, tutorial, function (err, validated) {
-										if (validated) {
-											res.json({signIn: 'succesful', admin: false, tutorial: true, editable: true})
-										} else {
-											res.json({signIn: 'succesful', admin: false, tutorial: true, editable: false})
-										}
-									})
-								} else {
-									res.json({signIn: 'succesful', admin: false, tutorial: false, editable: false})
-								}
-							}
-						});
+				isTutorial(tutId, function (err, thing) {
+					if (err) return console.log(err);
+					if (userid === morgan && thing) {
+						res.json({signIn: 'succesful', admin: true, tutorial: true, editable: true})
+					} else if (userid === morgan) {
+						res.json({signIn: 'succesful', admin: true, tutorial: false, editable: true})
 					} else {
-						res.json({signIn: 'succesful', admin: false, tutorial: false})
+						if (thing) {
+							const tutorial = {
+								tutorialID: tutId
+							};
+							con.query("SELECT * FROM tutorials WHERE id = '" + req.body.id + "'", function (err, result) {
+								if (err) {
+									console.log(err);
+								} else {
+									console.log(result);
+									if (result.length > 0) {
+										validateUser(userid, tutorial, function (err, validated) {
+											if (validated) {
+												res.json({
+													signIn: 'succesful',
+													admin: false,
+													tutorial: true,
+													editable: true
+												})
+											} else {
+												res.json({
+													signIn: 'succesful',
+													admin: false,
+													tutorial: true,
+													editable: false
+												})
+											}
+										})
+									} else {
+										res.json({signIn: 'succesful', admin: false, tutorial: false, editable: false})
+									}
+								}
+							});
+						} else {
+							res.json({signIn: 'succesful', admin: false, tutorial: false})
+						}
 					}
-				}
+				});
 			}
 		});
 });
@@ -426,6 +443,10 @@ app.post('/api/edit-tutorial', function (req, res) {
 		});
 });
 
+app.get('/tutorial-submit', function (req, res) {
+	console.log(req)
+});
+
 function validateUser(userid, tutorial, cb) {
 	console.log(userid, tutorial);
 	con.query("SELECT * FROM tutorials WHERE id = " + SqlString.escape(tutorial.tutorialID), function (err, result) {
@@ -447,6 +468,22 @@ function setScores() {
 	con.query("UPDATE tutorials SET score = score / 2", function (err, result) {
 		if (err) {
 			console.log(err);
+		}
+	});
+}
+
+function isTutorial(id, cb) {
+	const sql = 'SELECT id FROM tutorials WHERE id = ' + SqlString.escape(id);
+	con.query(sql, function (err, result) {
+		if (err) {
+			console.log(err);
+			cb(err, null)
+		} else {
+			if (result.length > 0) {
+				cb(null, true)
+			} else {
+				cb(null, false)
+			}
 		}
 	});
 }

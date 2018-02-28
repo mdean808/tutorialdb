@@ -21,9 +21,14 @@ function onSignIn(googleUser) {
 		},
 		success: function (result) {
 			console.log(result);
-			if (result.tutorial) {
-				$('#edit').show();
-				$('#delete').show();
+			if (result.editable && result.tutorial) {
+				$('#edit').html('<div class="row center">\n' +
+					'        <a data-target="edit-modal" class="btn waves-effect waves-light waves-block modal-trigger">Edit</a>\n' +
+					'        <br>\n' +
+					'        <a data-target="delete-modal" class="btn red waves-effect waves-light waves-block modal-trigger">Delete</a>\n' +
+					'    </div>');
+			} else if (!result.tutorial) {
+				$('#edit').html('<div class="row center"> <h1>404</h1> </div>')
 			}
 			$('#g-signIn').hide();
 			$('#g-signIn1').hide();
@@ -88,29 +93,17 @@ function search() {
 	});
 }
 
-function text() {
-	$.ajax({
-		method: 'post',
-		url: '/api/set-text',
-		success: function (result) {
-			console.log(result)
-		},
-		error: function (result, err) {
-			console.log('Error', err, 'at: ', result)
-		}
-	})
-}
 
 function loadTutorial() {
 	$.ajax({
 		method: 'post',
 		url: "/api/get-tutorial?id=" + getQueryString('id'),
 		success: function (result) {
-			console.log(result);
 			var tutorial = result.tutorialResults[0];
 			if (result.tutorialResults === false) {
 				M.toast({html: 'This tutorial does not exist'});
 				$('#tutorial-container').hide();
+				$('#edit').html('<div class="row center"> <h1>404</h1> </div>')
 			} else {
 				$('#tutorial-title').html(tutorial.title);
 				$('#form-title').val(tutorial.title);
@@ -126,6 +119,7 @@ function loadTutorial() {
 				$('#form-link').val(tutorial.link);
 
 				$('#tutorial-summary').html(tutorial.summary);
+				$('#loading').hide();
 			}
 		},
 		error: function (result, err) {
@@ -151,7 +145,8 @@ function removeTutorial() {
 			tutorialID: getQueryString('id')
 		},
 		success: function (result) {
-			if (result.delete.startsWith('Successful')) {
+			console.log(result.delete);
+			if (result.delete.startsWith('Succesful:')) {
 				M.toast({html: result.delete});
 				setTimeout(window.location.reload, 1500);
 			}
