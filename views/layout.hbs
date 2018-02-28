@@ -36,11 +36,11 @@
         <div class="divider"></div>
     </li>
     <li style="margin: 0 10px 0 10px">
-        <input id="search" class="search-nav" title="Search" type="text"
+        <input id="side-search" class="search-nav" title="Search" type="text"
                placeholder="Search Tutorials"
                onkeyup="if(event.keyCode === 13) { document.location.href = '/search?q=' + $('#side-search').val().replace(/ /g, '+'); }">
         <div class="center">
-            <button onclick="document.location.href = '/search?q=' + (document.getElementById('side-search').value).replace(/ /g, '+');"
+            <button onclick="document.location.href = '/search?q=' + $('#side-search').val().replace(/ /g, '+');"
                     class="inline waves-effect waves-light btn"><i class="material-icons">search</i></button>
         </div>
     </li>
@@ -88,7 +88,7 @@
                            onkeyup="if(event.keyCode === 13) { document.location.href = '/search?q=' + $('#search').val().replace(/ /g, '+'); }">
                 </li>
                 <li><a href="search?q="
-                       onclick="document.location.href = '/search?q=' + (document.getElementById('search').value).replace(/ /g, '+');"
+                       onclick="document.location.href = '/search?q=' + $('#side-search').val().replace(/ /g, '+');"
                        class="nav-item nav-search-btn">Search<i
                         class="material-icons left">search</i></a>
                 </li>
