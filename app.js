@@ -13,9 +13,10 @@ const index = require('./routes/index');
 const users = require('./routes/users');
 const session = require('express-session');
 
+const googleOauth = '513403102947-k7qrh4q7s7p5ar7b1dpo27o768e6iq8i.apps.googleusercontent.com';
 const app = express();
 const auth = new GoogleAuth;
-const client = new auth.OAuth2('513403102947-k7qrh4q7s7p5ar7b1dpo27o768e6iq8i.apps.googleusercontent.com', '', '');
+const client = new auth.OAuth2(googleOauth, '', '');
 const morgan = '101672782678779786564';
 let username = '', title = '', link = '', desc = '', summary = '';
 const recaptcha = new Recaptcha({
@@ -63,7 +64,7 @@ app.get('/submit-captcha', function (req, res) {
 				let authToken = '';
 				client.verifyIdToken(
 					token,
-					'513403102947-k7qrh4q7s7p5ar7b1dpo27o768e6iq8i.apps.googleusercontent.com',
+					googleOauth,
 					function (e, login) {
 						if (e) {
 							console.log(e);
@@ -240,7 +241,7 @@ app.post('/api/delete-tutorial', function (req, res) {
 	let userid = '';
 	client.verifyIdToken(
 		token,
-		'513403102947-k7qrh4q7s7p5ar7b1dpo27o768e6iq8i.apps.googleusercontent.com',
+		googleOauth,
 		function (e, login) {
 			const payload = login.getPayload();
 			userid = payload['sub'];
@@ -334,7 +335,7 @@ app.post('/api/auth-user', function (req, res) {
 	let userid = '';
 	client.verifyIdToken(
 		token,
-		'513403102947-k7qrh4q7s7p5ar7b1dpo27o768e6iq8i.apps.googleusercontent.com',
+		googleOauth,
 		function (e, login) {
 			if (e) {
 				console.log(e);
@@ -401,7 +402,7 @@ app.post('/api/edit-tutorial', function (req, res) {
 	let userid = '';
 	client.verifyIdToken(
 		token,
-		'513403102947-k7qrh4q7s7p5ar7b1dpo27o768e6iq8i.apps.googleusercontent.com',
+		googleOauth,
 		function (e, login) {
 			if (e) {
 				console.log(e);

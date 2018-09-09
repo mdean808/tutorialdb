@@ -28,6 +28,10 @@ a {
   background-color: #26a1da;
 }
 
+.bg {
+    background-color: #f9f9f9;
+}
+
 #search:focus {
   border-bottom: 1px solid #5bc0de;
   box-shadow: 0 1px 0 0 #5bc0de;
