@@ -1,5 +1,11 @@
 var idToken;
 
+$(function() {
+	if (window.location.pathname === '/submitted') $('#nice').append("<a href='/tutorial?id=" + getQueryString("id") + "'>here!</a>")
+	if (window.location.pathname === '/tutorial-submit' && !localStorage.loggedIn) window.location.href = '/not-signed-in'
+});
+
+
 function recaptchaCallback() {
 	$('#submitBtn').removeAttr('disabled');
 	document.getElementById('submitBtn').setAttribute("class", "btn btn-primary");
@@ -39,7 +45,7 @@ function onSignIn(googleUser) {
 			document.getElementById('new-tutorial').style.paddingLeft = '-8px';
 			document.getElementById('login-dropdown').innerHTML = "Welcome, " + profile.getName() + '<i class="material-icons right">arrow_drop_down</i>';
 			document.getElementById('nav-welcome').innerHTML = "Welcome, " + profile.getName();
-
+			localStorage.loggedIn = true
 		},
 		error: function (err) {
 			console.log(err);

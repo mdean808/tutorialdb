@@ -71,13 +71,14 @@ app.get('/submit-captcha', function (req, res) {
 						} else {
 							const payload = login.getPayload();
 							authToken = payload['sub'];
-							const sql = "INSERT INTO tutorials (title, link, description, summary, author, authToken, views, score) VALUES (" + SqlString.escape(title) + ", " + SqlString.escape(link) + ", " + SqlString.escape(desc) + ", " + SqlString.escape(summary) + ", " + SqlString.escape(username) + ", " + SqlString.escape(authToken) + ", " + 0 + ", " + 0 + ")";
-							con.query(sql, function (err, result) {
+							console.log(desc);
+							const sql = "INSERT INTO tutorials (title, link, description, summary, author, authToken, views, score) VALUES (?, ?, ?, ?, ?, ?, " + 0 + ", " + 0 + ")";
+							con.query(sql, [title, link, desc, summary, username, authToken], function (err, result) {
 								if (err) {
 									console.log(err);
 								} else {
 									console.log("Added Tutorial:", result);
-									res.status(200).redirect('/submitted');
+									res.status(200).redirect('/submitted?id=' + result.insertId);
 
 								}
 							});
@@ -148,7 +149,7 @@ function redoTable() {
 			console.log("Table dropped");
 		}
 	});
-	sql = "CREATE TABLE tutorials (id INT AUTO_INCREMENT PRIMARY KEY, title VARCHAR(255), link VARCHAR(255), description VARCHAR(255), summary VARCHAR(255), author VARCHAR(255), authToken VARCHAR(255), views INT, score INT)";
+	sql = "CREATE TABLE tutorials (id INT AUTO_INCREMENT PRIMARY KEY, title TEXT, link TEXT, description TEXT, summary TEXT, author TEXT, authToken TEXT, views INT, score INT)";
 	con.query(sql, function (err, result) {
 		if (err) {
 			console.log(err);
@@ -157,6 +158,8 @@ function redoTable() {
 		}
 	});
 }
+
+//redoTable()
 
 app.post('/api/get-all-tutorials', function (req, res) {
 	con.query("SELECT * FROM tutorials", function (err, result) {
@@ -357,7 +360,6 @@ app.post('/api/auth-user', function (req, res) {
 								if (err) {
 									console.log(err);
 								} else {
-									console.log(result);
 									if (result.length > 0) {
 										validateUser(userid, tutorial, function (err, validated) {
 											if (validated) {
@@ -445,11 +447,9 @@ app.post('/api/edit-tutorial', function (req, res) {
 });
 
 app.get('/tutorial-submit', function (req, res) {
-	console.log(req)
 });
 
 function validateUser(userid, tutorial, cb) {
-	console.log(userid, tutorial);
 	con.query("SELECT * FROM tutorials WHERE id = " + SqlString.escape(tutorial.tutorialID), function (err, result) {
 		if (err) {
 			console.log(err);
@@ -495,7 +495,8 @@ setInterval(setScores, 5 * 60 * 1000);
 app.use(function (req, res, next) {
 	const err = new Error('Not Found');
 	err.status = 404;
-	next(err);
+	res.render('error');
+	//next(err);
 });
 
 // error handler
