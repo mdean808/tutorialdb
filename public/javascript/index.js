@@ -184,9 +184,9 @@ function getTopTutorials() {
 			console.log(res);
 			if (res) {
 				for (var i = 0; i < res.tutorials.length; i++) {
-					$('#viewed').append('<div class="col s12 m3">\n' +
+					$('#viewed').append('<div class="col s12">\n' +
 						'                <div class="card z-depth-2 hoverable">\n' +
-						'                    <div class="card-content">\n' +
+						'                    <div class="card-content" style="max-height: 160px; height: 160px;">\n' +
 						'                        <span id="title" style"margin-left: -2px" class="card-title">' + res.tutorials[i].title + '</span>\n' +
 						'                        <small style="font-weight: bold; margin-top: -5px" id="author" class="grey-text text-darken-2">By ' + res.tutorials[i].author + '</small>\n' +
 						'                        <p id="summary" class="grey-text text-darken-1">' + res.tutorials[i].summary + '</p>\n' +
@@ -212,9 +212,9 @@ function getPopTutorials() {
 			console.log(res);
 			if (res) {
 				for (var i = 0; i < res.tutorials.length; i++) {
-					$('#popular').append('<div class="col s12 m3">\n' +
+					$('#popular').append('<div class="col s12">\n' +
 						'                <div class="card z-depth-2 hoverable">\n' +
-						'                    <div class="card-content">\n' +
+						'                    <div class="card-content" style="max-height: 160px; height: 160px;">\n' +
 						'                        <span id="title" style"margin-left: -2px" class="card-title">' + res.tutorials[i].title + '</span>\n' +
 						'                        <small style="font-weight: bold; margin-top: -5px" id="author" class="grey-text text-darken-2">By ' + res.tutorials[i].author + '</small>\n' +
 						'                        <p id="summary" class="grey-text text-darken-1">' + res.tutorials[i].summary + '</p>\n' +
@@ -239,9 +239,9 @@ function getRandTutorials() {
 			console.log(res);
 			if (res) {
 				for (var i = 0; i < res.tutorials.length; i++) {
-					$('#random').append('<div class="col s12 m3">\n' +
+					$('#random').append('<div class="col s12">\n' +
 						'                <div class="card z-depth-2 hoverable">\n' +
-						'                    <div class="card-content">\n' +
+						'                    <div class="card-content" style="max-height: 160px; height: 160px;">\n' +
 						'                        <span id="title" style"margin-left: -2px" class="card-title">' + res.tutorials[i].title + '</span>\n' +
 						'                        <small style="font-weight: bold; margin-top: -5px" id="author" class="grey-text text-darken-2">By ' + res.tutorials[i].author + '</small>\n' +
 						'                        <p id="summary" class="grey-text text-darken-1">' + res.tutorials[i].summary + '</p>\n' +
