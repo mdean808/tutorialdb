@@ -1,0 +1,64 @@
+<br>
+<div class="container">
+    <h3 style="color: #000; margin-top: 0;">Your Tutorials</h3>
+    <hr>
+    <div id="tutorialResults">
+        <div class="row center" id="loading">
+            <img width="64" height="64" src="/icons/loading.gif">
+        </div>
+    </div>
+    <div id="search-footer" class="center">
+        <hr>
+    </div>
+</div>
+
+<div id="edit-modal" class="modal">
+    <div class="modal-content">
+        <h4>Edit Tutorial</h4>
+        <form action="/api/edit-tutorial" method="post">
+            <div class="form-group">
+                <label for="form-title">Title</label>
+                <input type="text" class="form-control browser-default" name="title" id="form-title" required>
+                <small id="titleHelp" class="form-text text-muted">This is the title of the tutorial.</small>
+            </div>
+            <div class="form-group">
+                <label for="form-link">Link</label>
+                <input type="url" class="form-control browser-default" name="link" id="form-link" required>
+                <small id="linkHelp" class="form-text text-muted">This is the direct url to the tutorial.</small>
+            </div>
+            <div class="form-group">
+                <label for="tutorial-details">Tutorial information</label>
+                <textarea class="form-control" id="tutorial-details" name="details" rows="3"
+                          oninput="$('#tutorial-details-preview').html(new showdown.Converter().makeHtml(document.getElementById('tutorial-details').value));"
+                          required></textarea>
+                <small id="detailsHelp" class="form-text text-muted">Describe your tutorial here. You can use <a
+                        href="http://commonmark.org/help/" target="_blank">Markdown </a>here.
+                </small>
+            </div>
+
+            <div style="border: 2px solid #5bc0de;padding: 24px 24px 20px 24px; border-radius: 6px; margin-top: 15px; margin-bottom: 15px;">
+                <label for="tutorial-details-preview">Preview</label>
+                <p id="tutorial-details-preview"></p>
+            </div>
+            <div class="form-group">
+                <label for="tutorial-summary">Summary</label>
+                <textarea class="form-control" id="tutorial-summary" name="summary" rows="2" required></textarea>
+                <small id="fileHelp" class="form-text text-muted">Make a quick summary of your tutorial for searches
+                    here.
+                </small>
+                <input type="hidden" id="google-token" name="g-id" value="" required/>
+                <input type="hidden" id="tutorial-id" name="tutorialID" value="" required/>
+            </div>
+            <br/>
+            <button id="submitBtn" type="submit" class="btn waves-effect waves-light waves-block">Submit</button>
+        </form>
+    </div>
+
+</div>
+
+<script type="text/javascript" src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+
+<script src="/javascript/index.js"></script>
+<script>
+    ///loadTutorials();
+</script>

@@ -1,8 +1,9 @@
 var idToken;
-
-$(function() {
+var signedInAlready = false;
+$(function () {
 	if (window.location.pathname === '/submitted') $('#nice').append("<a href='/tutorial?id=" + getQueryString("id") + "'>here!</a>")
 	if (window.location.pathname === '/tutorial-submit' && !localStorage.loggedIn) window.location.href = '/not-signed-in'
+	$('.tabs').tabs();
 });
 
 
@@ -42,10 +43,19 @@ function onSignIn(googleUser) {
 			$('#nav-logged-in').show();
 			$('#new-tutorial').show();
 			$('#login-dropdown').show();
+			$('#login-dropdown').on('click', function () {
+				console.log("click");
+				$('#signout').show();
+				$('#user-tutorials').show();
+			});
+
+			if (window.location.pathname === '/my-tutorials' && !signedInAlready) loadTutorials();
+
 			document.getElementById('new-tutorial').style.paddingLeft = '-8px';
 			document.getElementById('login-dropdown').innerHTML = "Welcome, " + profile.getName() + '<i class="material-icons right">arrow_drop_down</i>';
 			document.getElementById('nav-welcome').innerHTML = "Welcome, " + profile.getName();
-			localStorage.loggedIn = true
+			localStorage.loggedIn = true;
+			signedInAlready = true;
 		},
 		error: function (err) {
 			console.log(err);
@@ -100,6 +110,58 @@ function search() {
 }
 
 
+function loadTutorials() {
+	$.ajax({
+		method: 'post',
+		url: "/api/get-tutorials",
+		data: {
+			tokenId: idToken
+		},
+		success: function (result1) {
+			var theSnippet = '<div class="row">' +
+				'				<div class="col s12 m12">' +
+				'					<div class="card z-depth-0" style="border-radius: 5px">' +
+				'						<div class="card-content"> ' +
+				'							<a href="%LINK%">' +
+				'							<h5 style="color: #0094ff; margin-top: 0px;">%TITLE%</h5>' +
+				'							</a> <p>%DESCRIPTION%</p>' +
+				'							<a class="btn blue right modal-trigger" data-target="edit-modal" id="editButton-%ID%"" style="margin-top: -70px;"><i class="material-icons">edit</i></a>' +
+				'							<a class="btn red right" id="deleteButton" onclick="deleteTutorial(%ID%)" style="margin-top: -25px;"><i class="material-icons">delete</i></a>' +
+				'						</div>' +
+				'					</div>' +
+				'				</div>' +
+				'			</div>\n';
+			var results = result1.tutorialResults;
+			console.log(results);
+			for (var i = 0; i < results.length; i++) {
+				var result = results[i];
+				$('#loading').remove();
+				// noinspection JSUnresolvedVariable
+				document.getElementById('tutorialResults').innerHTML += theSnippet.replace(/%TITLE%/g, result.title).replace(/%ID%/g, result.id).replace(/%TUT%/, result).replace(/%DESCRIPTION%/g, new showdown.Converter().makeHtml(result.summary)).replace(/%LINK%/g, "tutorial?id=" + result.id);
+			}
+			$('#loading').remove();
+
+			for (let i = 0; i < results.length; i++) {
+				$('#editButton-' + results[i].id).click(function () {
+					console.log('wack');
+					editTutorial(results[i])
+				});
+			}
+		},
+		error: function (result, err) {
+			console.log("err", err);
+			console.log(result);
+			$('#loading').remove();
+		}
+	});
+}
+
+function deleteTutorial(id) {
+	if (confirm("Are you sure?")) {
+		removeTutorial(id)
+	}
+}
+
 function loadTutorial() {
 	$.ajax({
 		method: 'post',
@@ -142,13 +204,14 @@ var getQueryString = function (field, url) {
 	return string ? string[1] : null;
 };
 
-function removeTutorial() {
+function removeTutorial(id) {
+	console.log(id)
 	$.ajax({
 		url: "/api/delete-tutorial",
 		method: 'post',
 		data: {
 			tokenId: idToken,
-			tutorialID: getQueryString('id')
+			tutorialID: getQueryString('id') || id
 		},
 		success: function (result) {
 			console.log(result.delete);
@@ -160,20 +223,17 @@ function removeTutorial() {
 	});
 }
 
-function editTutorial() {
-	$.ajax({
-		url: "/api/check-user",
-		method: 'post',
-		data: {
-			tokenId: idToken,
-			tutorialID: getQueryString('id')
-		},
-		success: function (result) {
-			if (result.edited) {
-				M.toast({html: 'Successfully edited tutorial. Please reload to see changes'})
-			}
-		}
-	});
+function editTutorial(tutorial) {
+	$('#form-title').val(tutorial.title);
+	// noinspection JSUnresolvedVariable
+	$('#tutorial-desc').html(new showdown.Converter().makeHtml(tutorial.description));
+	$('#tutorial-details').html(tutorial.description);
+	$('#tutorial-details-preview').html(new showdown.Converter().makeHtml(document.getElementById('tutorial-details').value));
+
+	$('#form-link').val(tutorial.link);
+
+	$('#tutorial-summary').html(tutorial.summary);
+	$('#tutorial-id').val(tutorial.id)
 }
 
 function getTopTutorials() {

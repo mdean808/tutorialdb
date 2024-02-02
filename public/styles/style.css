@@ -444,7 +444,7 @@ select.form-control-lg:not([size]):not([multiple]), .input-group-lg > select.for
 @media (min-width: 800px) {
     .tutorial-wrapper {
         display: grid;
-        grid-template-columns: 1fr 1fr;
+        grid-template-columns: 1fr 1fr 1fr;
         grid-column-gap: 10px;
         grid-row-gap: 10px;
     }
@@ -454,4 +454,30 @@ select.form-control-lg:not([size]):not([multiple]), .input-group-lg > select.for
     .hide-on-med-and-down-better {
         display: none;
     }
+}
+
+.nav-search-btn:hover {
+    background: rgba(0, 0, 0, 0.15);
+}
+
+@media (max-width: 1050px) {
+    .tutorial-wrapper {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+.tabs {
+    background-color: transparent;
+}
+
+.tabs .tab a:hover, .tabs .tab a.active {
+    color: #5ac0de;
+}
+
+.tabs .tab a {
+    color: #91d0e2;
+}
+
+.tabs .indicator {
+    background-color: #5ac0de;
 }

@@ -6,7 +6,7 @@ router.get('/', function(req, res, next) {
   res.render('index', { title: 'Home' });
 });
 
-const landingPages = ["about", "index", "not-signed-in", "search", "signed-out", "submitted", "tutorial", "tutorial-submit", "tutorials"];
+const landingPages = ["about", "index", "not-signed-in", "search", "signed-out", "submitted", "tutorial", "tutorial-submit", "my-tutorials", "tutorials"];
 for(let i = 0; i < landingPages.length; i++) {
     let pg = landingPages[i] === "" ? "index" : landingPages[i];
     router.get('/' + pg, function(req, res) {

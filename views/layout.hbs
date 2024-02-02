@@ -56,10 +56,10 @@
         <a href="signed-out" class="waves-effect" onclick="signOut();">Sign out</a></li>
 </ul>
 
-<ul id='logged-in' class='dropdown-content' style="color: #5bc0de">
-    <li class="gray lighten-3"><a href="#" style="color: #5bc0de;">Your Tutorials</a></li>
+<ul id='logged-in' class='dropdown-content' style="color: #5bc0de;">
+    <li style="cursor: default;" class="gray lighten-3"><a id="user-tutorials" style="display: none; color: #5bc0de;" href="/my-tutorials">Your Tutorials</a></li>
     <li class="divider"></li>
-    <li><a href="signed-out" style="color: #5bc0de" onclick="signOut();">Sign out</a></li>
+    <li style="cursor: default;"><a href="signed-out" id="signout" style="display: none; color: #5bc0de" onclick="signOut();">Sign out</a></li>
 </ul>
 <div class="navbar-fixed">
     <nav>
@@ -86,9 +86,9 @@
                            placeholder="Search Tutorials"
                            onkeyup="if(event.keyCode === 13) { document.location.href = '/search?q=' + $('#search').val().replace(/ /g, '+'); }">
                 </li>
-                <li><a href="search?q="
+                <li class="nav-search-btn"><a href="search?q="
                        onclick="document.location.href = '/search?q=' + $('#side-search').val().replace(/ /g, '+');"
-                       class="nav-item nav-search-btn">Search<i
+                       class="nav-item nav-search-btn"><i
                         class="material-icons left">search</i></a>
                 </li>
             </ul>
@@ -136,7 +136,7 @@
         }
 
         if (getQueryString('error')) {
-    		M.toast({html: 'Error: ' + decodeURIComponent(getQueryString('error'))})
+    		M.toast({html: '' + decodeURIComponent(getQueryString('error'))})
         }
 
         var element = document.querySelector('.sidenav');

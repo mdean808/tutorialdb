@@ -6,20 +6,20 @@
     "start": "node ./bin/www"
   },
   "dependencies": {
-    "body-parser": "~1.18.2",
+    "body-parser": "^1.18.3",
     "cookie-parser": "~1.4.3",
     "debug": "~2.6.9",
-    "express": "~4.15.5",
+    "express": "^4.16.4",
     "express-handlebars": "^3.0.0",
     "express-session": "^1.15.6",
     "google-auth-library": "^0.11.0",
-    "handlebars": "^4.0.11",
+    "handlebars": "^4.0.12",
     "hbs": "~4.0.1",
-    "morgan": "~1.9.0",
-    "mysql": "^2.15.0",
+    "morgan": "^1.9.1",
+    "mysql": "^2.16.0",
     "recaptcha-verify": "^0.1.1",
     "serve-favicon": "~2.4.5",
-    "sqlstring": "^2.3.0",
+    "sqlstring": "^2.3.1",
     "swearjar": "^0.2.0"
   }
 }

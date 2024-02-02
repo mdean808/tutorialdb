@@ -71,7 +71,6 @@ app.get('/submit-captcha', function (req, res) {
 						} else {
 							const payload = login.getPayload();
 							authToken = payload['sub'];
-							console.log(desc);
 							const sql = "INSERT INTO tutorials (title, link, description, summary, author, authToken, views, score) VALUES (?, ?, ?, ?, ?, ?, " + 0 + ", " + 0 + ")";
 							con.query(sql, [title, link, desc, summary, username, authToken], function (err, result) {
 								if (err) {
@@ -193,6 +192,40 @@ app.post('/api/search-tutorials', function (req, res) {
 	}
 
 });
+
+app.post('/api/get-tutorials', function (req, res) {
+	if (con.state !== 'disconnected') {
+		const token = req.body.tokenId;
+		let authToken = '';
+		client.verifyIdToken(
+			token,
+			googleOauth,
+			function (e, login) {
+				if (e) {
+					console.log(e);
+				} else {
+					const payload = login.getPayload();
+					authToken = payload['sub'];
+					con.query("SELECT * FROM tutorials WHERE authToken LIKE " + SqlString.escape("%" + authToken + "%"), function (err, result) {
+						if (err) {
+							console.log(err)
+						} else {
+							for (let i = 0; i < result.length; i++) {
+								// noinspection JSUnresolvedVariable
+								delete result[i].authToken;
+							}
+							res.writeHead(200, {'Content-Type': 'application/json'});
+							res.end(JSON.stringify({
+								tutorialResults: result
+							}));
+						}
+					});
+				}
+			});
+	}
+
+});
+
 
 app.post('/api/get-tutorial', function (req, res) {
 	con.query("SELECT * FROM tutorials WHERE id = '" + req.query.id + "'", function (err, result) {
@@ -434,6 +467,7 @@ app.post('/api/edit-tutorial', function (req, res) {
 									console.log(err);
 									res.redirect('/tutorial?id=' + tutorialInfo.tutorialID + '&error=There was an error');
 								} else {
+									console.log(req.originalUrl)
 									res.redirect('/tutorial?id=' + tutorialInfo.tutorialID + '&error=Successfully edited tutorial');
 								}
 							});
